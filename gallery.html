@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>キャラ見本帳（試作）</title>
+  <style>
+    body { margin: 0; padding: 20px; background: #f3f5f2; color: #1d1d22; font-family: system-ui, sans-serif; }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    figure { margin: 0; background: #fff; border: 2px solid #1d1d22; border-radius: 12px; padding: 6px 6px 8px; }
+    figure svg { width: 100%; display: block; }
+    figcaption { font-size: 12px; line-height: 1.4; }
+    figcaption b { font-size: 14px; }
+    code { font-size: 11px; }
+  </style>
+</head>
+<body>
+  <h1>キャラ見本帳：ランダムな番号から生成（上段＝同じ品番の別ロット）</h1>
+  <div class="grid" id="lots"></div>
+  <h1 style="margin-top:24px">いろいろな品番</h1>
+  <div class="grid" id="grid"></div>
+  <script type="module" src="/src/gallery.ts"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>バーコードの子（試作）</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet" />
+</head>
+<body data-view="home">
+  <header class="top">
+    <span class="mark">バーコードの子</span>
+    <span class="ver">試作</span>
+  </header>
+
+  <main>
+    <section class="home" aria-labelledby="home-title">
+      <h1 id="home-title">そのバーコード、<br />だれかの体です。</h1>
+      <p class="lead">商品のバーコードを読むと、その縞をまとったキャラが生まれます。同じ商品からは同じ姿。買い直すと、ちょっと違うロットに会えます。</p>
+
+      <div class="scanner">
+        <video id="video" playsinline muted></video>
+        <div class="scanner-hint">ここにバーコード</div>
+        <div class="laser" aria-hidden="true"></div>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="btn-camera" class="btn primary">カメラで読む</button>
+        <label class="btn">
+          写真から読む
+          <input id="file" type="file" accept="image/*" capture="environment" class="visually-hidden" />
+        </label>
+      </div>
+      <p class="msg" role="status" aria-live="polite"></p>
+
+      <form id="manual" class="manual" autocomplete="off">
+        <label for="jan">バーコードの下の数字を打って生む</label>
+        <div class="row">
+          <input id="jan" inputmode="numeric" pattern="[0-9 ]*" maxlength="15" placeholder="4900000012345" />
+          <button type="submit" class="btn">生む</button>
+        </div>
+      </form>
+
+      <div class="samples">
+        <p>手元に商品がない時の、架空の番号</p>
+        <div class="samples-list"></div>
+      </div>
+
+      <section class="shelf" aria-labelledby="shelf-title">
+        <h2 id="shelf-title">棚</h2>
+        <p class="shelf-empty">まだ空っぽです。最初の1個を読んでみてください。</p>
+        <ul class="shelf-list"></ul>
+      </section>
+
+      <div class="debug-panel">
+        <p>試作用の操作</p>
+        <button type="button" id="dbg-day" class="btn">時間を1日すすめる</button>
+        <button type="button" id="dbg-reset" class="btn">記録を消す</button>
+      </div>
+    </section>
+
+    <section class="stage" aria-live="polite">
+      <div id="morph" class="morph"></div>
+      <article class="tag">
+        <div class="tag-hole" aria-hidden="true"></div>
+        <p class="tag-status"></p>
+        <div class="tag-head">
+          <span class="tag-taste"></span>
+          <span class="tag-kind"></span>
+        </div>
+        <h2 class="tag-name"></h2>
+        <p class="tag-flavor"></p>
+        <p class="tag-movewrap">技 <span class="tag-move"></span></p>
+        <dl class="tag-stats"></dl>
+        <div class="tag-foot">
+          <div class="tag-code"></div>
+          <p class="tag-lot"></p>
+        </div>
+      </article>
+      <div class="result-actions">
+        <button type="button" id="again" class="btn primary">もう1個読む</button>
+        <button type="button" id="save" class="btn">画像にする</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="share" class="sheet">
+    <img id="share-img" alt="キャラの画像" />
+    <p>長押し（パソコンは右クリック）で保存できます。</p>
+    <button type="button" id="share-close" class="btn">閉じる</button>
+  </dialog>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
