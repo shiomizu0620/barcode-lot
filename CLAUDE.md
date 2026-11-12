@@ -11,6 +11,7 @@
 - 読み取り: `barcode-detector`（ZXing WASM）。`public/zxing_reader.wasm` を自前配信。端末に標準の BarcodeDetector があればそちらを使う
 - データ: 試作は端末内（localStorage）のみ。サーバーなし
 - 本番の予定: Cloudflare Workers + D1
+- アプリ版は後でFlutterで作る。キャラ生成は `fixtures/golden.json` と完全一致させる（同じ番号から必ず同じキャラ）
 
 ## 主なファイル
 - `src/ean.ts` JANの検証・縞（95モジュール）の再現
@@ -24,6 +25,7 @@
 ## 起動
 - `npm i` → `npm run dev`（スマホから試すときは同じWi-Fiで表示されたURLへ。カメラはHTTPSかlocalhostでのみ動く）
 - `npm run build` で `dist/`（相対パスなので、どこに置いても動く）
+- `npm test` で答え合わせ用データとの一致を確認。生成ルールを意図して変えたときだけ `npm run golden` で作り直す
 - `#debug` を付けて開くと「時間を1日すすめる」「記録を消す」が出る
 
 ## 決まっていること
