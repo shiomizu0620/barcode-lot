@@ -5,6 +5,7 @@
 ## 仕様・企画
 - 企画メモ: `docs/brief.md`（claude.aiのプロジェクト「バーコードバトル」の企画メモと同じ内容）
 - 試作の仕様: `docs/spec.md`
+- バトル作り直しの計画: `docs/battle-plan.md`（設計と進め方の正本。バトルを触る前に必ず読む）
 
 ## 技術構成
 - Vite + TypeScript（フレームワークなし）。キャラはSVGを文字列で組み立てる
@@ -26,7 +27,8 @@
 - `src/profile.ts` 商品プロフィールの取得と端末内保存
 - `worker/index.ts` Cloudflare Worker（静的配信と商品API）
 - `src/battle.ts` バトルの計算（3対3の自動バトル、味の相性、組み合わせ技、今日の挑戦者、挑戦状URL）。調整用の数値は `TUNE`
-- `src/battle-ui.ts` チーム選択とバトル画面
+- `src/battle-ui.ts` チーム選択とバトル画面（計算の出来事を再生するだけ。勝敗や数値はここで決めない）
+- `src/sfx.ts` 効果音（音源ファイルなし）
 - `gallery.html` キャラ見本帳（ランダムな番号で一覧表示。`#文字列` で並びが変わる）
 
 ## 起動
