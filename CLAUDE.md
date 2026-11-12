@@ -26,6 +26,7 @@
 - `npm i` → `npm run dev`（スマホから試すときは同じWi-Fiで表示されたURLへ。カメラはHTTPSかlocalhostでのみ動く）
 - `npm run build` で `dist/`（相対パスなので、どこに置いても動く）
 - `npm test` で答え合わせ用データとの一致を確認。生成ルールを意図して変えたときだけ `npm run golden` で作り直す
+- 配信: Cloudflare Workers（`wrangler.jsonc`、静的ファイルのみ）。ビルドは `npm run build`、出力は `dist/`
 - `#debug` を付けて開くと「時間を1日すすめる」「記録を消す」が出る
 
 ## 決まっていること
