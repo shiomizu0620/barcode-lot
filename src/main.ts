@@ -5,6 +5,7 @@ import { advanceDays, allLots, lotNumber, remainingText, resetAll, scan, type Lo
 import { drawStill, playMorph } from "./morph";
 import { renderCharacter } from "./render";
 import { beep, detectFromImage, startCamera, type CameraSession } from "./scan";
+import { getProfile, storedProfile } from "./profile";
 
 const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector(sel) as T;
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -98,15 +99,17 @@ async function hatch(raw: string) {
     return;
   }
   busy = true;
+  say("商品を調べています");
+  beep();
+  const profile = await getProfile(jan);
   say("");
-  const spec = specFor(jan);
+  const spec = specFor(jan, profile);
   const res = scan(jan, kindOf(jan));
   const look = lotLook(spec, res.lot.seed);
   current = { spec, look, lot: res.lot, res };
   fillTag(spec, look, res.lot, res);
   setView("stage");
   document.body.classList.add("morphing");
-  beep();
   await playMorph(morphHost, spec, look, reduced);
   document.body.classList.remove("morphing");
   renderShelf();
@@ -115,7 +118,7 @@ async function hatch(raw: string) {
 }
 
 function showStill(lot: Lot) {
-  const spec = specFor(lot.jan);
+  const spec = specFor(lot.jan, storedProfile(lot.jan));
   const look = lotLook(spec, lot.seed);
   current = { spec, look, lot };
   fillTag(spec, look, lot);
@@ -134,7 +137,8 @@ function fillTag(spec: Spec, look: LotLook, lot: Lot, res?: ScanResult) {
   $(".tag-taste").textContent = spec.taste;
   $(".tag-kind").textContent = KIND_LABEL[spec.kind];
   $(".tag-name").textContent = spec.name;
-  $(".tag-flavor").textContent = `${spec.palette.name}色の${spec.family === "cute" ? "かわいい" : "かっこいい"}系`;
+  const fam = spec.family === "cute" ? "かわいい" : "かっこいい";
+  $(".tag-flavor").textContent = spec.flavorLabel ? `${spec.flavorLabel}から生まれた、${fam}系` : `${spec.palette.name}色の${fam}系（商品の中身は不明）`;
   $(".tag-move").textContent = spec.move;
   const keys = Object.keys(STAT_LABEL) as (keyof Stats)[];
   $(".tag-stats").innerHTML = keys
@@ -166,7 +170,7 @@ function renderShelf() {
   shelf.innerHTML = lots
     .slice(0, 40)
     .map((lot, i) => {
-      const spec = specFor(lot.jan);
+      const spec = specFor(lot.jan, storedProfile(lot.jan));
       const look = lotLook(spec, lot.seed);
       return `<li><button type="button" class="slot" data-i="${i}"><span class="thumb">${renderCharacter(spec, look).svg}</span><span class="slot-name">${spec.name}</span><span class="slot-lot">${lotNumber(lot)}</span></button></li>`;
     })
@@ -224,7 +228,7 @@ async function shareImage(spec: Spec, look: LotLook, lot: Lot): Promise<string> 
   ctx.font = '96px "Dela Gothic One", sans-serif';
   ctx.fillText(spec.name, tx + 56, ty + 140);
   ctx.font = '700 40px "Zen Kaku Gothic New", sans-serif';
-  ctx.fillText(`${spec.taste}　技「${spec.move}」`, tx + 60, ty + 210);
+  ctx.fillText(`${spec.flavorLabel ? spec.flavorLabel + "の子　" : ""}${spec.taste}　技「${spec.move}」`, tx + 60, ty + 210);
   ctx.font = '500 34px "Zen Kaku Gothic New", sans-serif';
   ctx.fillText(`ロット ${lotNumber(lot)}`, tx + 60, ty + 270);
   // バーコード

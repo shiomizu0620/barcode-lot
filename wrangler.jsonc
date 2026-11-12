@@ -1,9 +1,13 @@
 {
-  // Cloudflare Workers（静的ファイルのみ）。サーバー処理を足すときは main を追加する
+  // Cloudflare Workers：静的ファイル（dist）＋ /api/* だけWorkerで処理
   "name": "barcode-lot",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
   }
+  // Yahoo!のClient IDは `npx wrangler secret put YAHOO_APPID` で設定（任意）
 }

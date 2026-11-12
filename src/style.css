@@ -219,6 +219,9 @@ label.btn:focus-within { outline: 3px solid var(--sale); outline-offset: 2px; }
 .slot-name { font: 700 13px/1.3 var(--font-body); margin-top: 6px; }
 .slot-lot { font: 11px/1.3 var(--font-digits); color: #555a60; }
 
+.credit { margin: 36px 0 0; font-size: 12px; color: #555a60; }
+.credit a { color: inherit; }
+
 .debug-panel { display: none; margin-top: 32px; padding-top: 16px; border-top: 2px dashed var(--rule); }
 body.debug .debug-panel { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .debug-panel p { width: 100%; margin: 0; font-size: 13px; font-weight: 700; }

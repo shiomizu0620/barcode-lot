@@ -4,6 +4,7 @@
 
 import { Rng } from "./rng";
 import { kindOf, type CodeKind } from "./ean";
+import { flavorById, type ProductProfile } from "./product";
 
 export type Taste = "あまい" | "しょっぱい" | "すっぱい" | "にがい" | "からい" | "うまい";
 export type Family = "cute" | "cool";
@@ -65,6 +66,8 @@ const TAIL = ["コ", "ル", "ポ", "ン", "チ", "ス", "ロ", "ブ", "ド", "�
 
 export interface Spec {
   jan: string;
+  flavor?: string; // 商品の中身から決まった味（Flavor.id）。分からなければ無し
+  flavorLabel?: string;
   kind: CodeKind;
   name: string;
   taste: Taste;
@@ -105,20 +108,33 @@ function makeName(r: Rng): string {
   return s.replace(/[ッン]$/, "ル");
 }
 
-export function specFor(jan: string): Spec {
+/**
+ * 品番からキャラを決める。商品プロフィールがあれば、味・色・技をそちらで上書きする。
+ * 乱数の引く順番は変えない（プロフィールの有無で他の部位が変わらないように）。
+ */
+export function specFor(jan: string, profile?: ProductProfile): Spec {
   const r = new Rng("hinban:" + jan);
   const family: Family = r.chance(0.5) ? "cute" : "cool";
-  const taste = r.pick(TASTES);
-  const palette = r.pick(PALETTES[taste]);
+  let taste = r.pick(TASTES);
+  let palette = r.pick(PALETTES[taste]);
   const cute = family === "cute";
+  const name = makeName(r);
+  let move = r.pick(MOVES[taste]);
+  const fl = flavorById(profile?.flavor);
+  if (fl) {
+    taste = fl.taste;
+    palette = fl.palette;
+    move = fl.moves[Number(jan[12]) % fl.moves.length];
+  }
   return {
     jan,
+    ...(fl ? { flavor: fl.id, flavorLabel: fl.label } : {}),
     kind: kindOf(jan),
-    name: makeName(r),
+    name,
     taste,
     family,
     palette,
-    move: r.pick(MOVES[taste]),
+    move,
     body: {
       w: r.range(cute ? 150 : 132, cute ? 176 : 160),
       h: r.range(cute ? 118 : 132, cute ? 142 : 156),

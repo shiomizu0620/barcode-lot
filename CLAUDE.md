@@ -9,7 +9,9 @@
 ## 技術構成
 - Vite + TypeScript（フレームワークなし）。キャラはSVGを文字列で組み立てる
 - 読み取り: `barcode-detector`（ZXing WASM）。`public/zxing_reader.wasm` を自前配信。端末に標準の BarcodeDetector があればそちらを使う
-- データ: 試作は端末内（localStorage）のみ。サーバーなし
+- データ: キャラとロットは端末内（localStorage）。商品プロフィール（味の分類）だけWorkerに聞く
+- 商品の中身: `worker/index.ts` の `/api/product/:jan` が Yahoo!ショッピング（`YAHOO_APPID` があれば）→ Open Food Facts の順に調べ、`src/product.ts` の辞書で味を決める。商品名・ブランド名は返さない・保存しない
+- 一度決まった品番のプロフィールは端末に保存し、キャラの見た目が後から変わらないようにする
 - 本番の予定: Cloudflare Workers + D1
 - アプリ版は後でFlutterで作る。キャラ生成は `fixtures/golden.json` と完全一致させる（同じ番号から必ず同じキャラ）
 
@@ -20,13 +22,17 @@
 - `src/morph.ts` 変身演出
 - `src/lots.ts` ロットの記録と消費サイクル
 - `src/scan.ts` カメラ・写真からの読み取り
+- `src/product.ts` 商品の文字→味・色・技の辞書
+- `src/profile.ts` 商品プロフィールの取得と端末内保存
+- `worker/index.ts` Cloudflare Worker（静的配信と商品API）
 - `gallery.html` キャラ見本帳（ランダムな番号で一覧表示。`#文字列` で並びが変わる）
 
 ## 起動
 - `npm i` → `npm run dev`（スマホから試すときは同じWi-Fiで表示されたURLへ。カメラはHTTPSかlocalhostでのみ動く）
 - `npm run build` で `dist/`（相対パスなので、どこに置いても動く）
 - `npm test` で答え合わせ用データとの一致を確認。生成ルールを意図して変えたときだけ `npm run golden` で作り直す
-- 配信: Cloudflare Workers（`wrangler.jsonc`、静的ファイルのみ）。ビルドは `npm run build`、出力は `dist/`
+- 配信: Cloudflare Workers（`wrangler.jsonc`。`/api/*` だけWorker、ほかは `dist/` の静的ファイル）。`main` へのpushで自動デプロイ
+- Yahoo!のClient IDは `npx wrangler secret put YAHOO_APPID`（無くても Open Food Facts だけで動く）
 - `#debug` を付けて開くと「時間を1日すすめる」「記録を消す」が出る
 
 ## 決まっていること
