@@ -48,7 +48,13 @@
       </div>
 
       <section class="shelf" aria-labelledby="shelf-title">
-        <h2 id="shelf-title">棚</h2>
+        <div class="shelf-head">
+          <h2 id="shelf-title">棚</h2>
+          <div class="shelf-actions">
+            <button type="button" id="btn-letter" class="btn sale" hidden>挑戦状を受ける</button>
+            <button type="button" id="btn-battle" class="btn primary" hidden>今日の挑戦者と戦う</button>
+          </div>
+        </div>
         <p class="shelf-empty">まだ空っぽです。最初の1個を読んでみてください。</p>
         <ul class="shelf-list"></ul>
       </section>
@@ -83,6 +89,34 @@
       <div class="result-actions">
         <button type="button" id="again" class="btn primary">もう1個読む</button>
         <button type="button" id="save" class="btn">画像にする</button>
+      </div>
+    </section>
+    <section class="team" aria-labelledby="team-heading">
+      <button type="button" id="team-back" class="back">棚にもどる</button>
+      <h2 id="team-heading" class="view-title"><span class="team-title"></span>にチームで挑む</h2>
+      <div class="team-foe" aria-label="あいてのチーム"></div>
+      <p class="team-help">棚から3体えらぶ。えらんだ順に前に立つよ。</p>
+      <ul class="team-list"></ul>
+      <p class="team-combos" aria-live="polite"></p>
+      <div class="team-actions">
+        <button type="button" id="team-go" class="btn primary">この順番で戦う</button>
+        <button type="button" id="team-letter" class="btn">このチームで挑戦状を送る</button>
+      </div>
+      <p class="team-msg" role="status"></p>
+    </section>
+
+    <section class="battle" aria-label="バトル">
+      <div class="row row-foe"></div>
+      <div class="battle-log" aria-live="polite"></div>
+      <div class="row row-mine"></div>
+      <button type="button" id="battle-skip" class="btn skip">結果まで飛ばす</button>
+      <div class="battle-result" hidden>
+        <p class="battle-result-title"></p>
+        <p class="battle-result-sub"></p>
+        <div class="team-actions">
+          <button type="button" id="battle-again" class="btn primary">チームを組み直す</button>
+          <button type="button" id="battle-home" class="btn">棚にもどる</button>
+        </div>
       </div>
     </section>
   </main>

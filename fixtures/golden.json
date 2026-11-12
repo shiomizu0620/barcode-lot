@@ -12092,5 +12092,1116 @@
         }
       ]
     }
+  ],
+  "battles": [
+    {
+      "a": [
+        {
+          "jan": "4900000012347",
+          "lotSeed": "1:20400",
+          "profile": {
+            "flavor": "habanero",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "4567890123456",
+          "lotSeed": "1:20401"
+        },
+        {
+          "jan": "4912345000040",
+          "lotSeed": "1:20402",
+          "profile": {
+            "flavor": "curry",
+            "source": "off"
+          }
+        }
+      ],
+      "b": [
+        {
+          "jan": "4747563890414",
+          "lotSeed": "1:20407",
+          "profile": {
+            "flavor": "blacktea",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "4210441656643",
+          "lotSeed": "1:20408"
+        },
+        {
+          "jan": "4468910008206",
+          "lotSeed": "1:20409",
+          "profile": {
+            "flavor": "beer",
+            "source": "off"
+          }
+        }
+      ],
+      "seed": "golden:0",
+      "winner": 0,
+      "events": [
+        {
+          "t": "round",
+          "n": 1
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 0,
+          "move": "アールグレイの香り",
+          "damage": 61,
+          "hpAfter": 134,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 0,
+          "move": "泡立ちタックル",
+          "damage": 75,
+          "hpAfter": 59,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 0,
+          "move": "激辛ストレート",
+          "damage": 43,
+          "hpAfter": 16,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 0,
+          "target": 0,
+          "move": "火吹きスパイス",
+          "damage": 75,
+          "hpAfter": 30,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 0,
+          "move": "スパイス渦巻き",
+          "damage": 56,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 1,
+          "slot": 0
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 1,
+          "target": 1,
+          "move": "シュガーコート",
+          "damage": 149,
+          "hpAfter": 25,
+          "match": "strong",
+          "reason": "甘さが辛さをまろやかにした"
+        },
+        {
+          "t": "round",
+          "n": 2
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 0,
+          "move": "泡立ちタックル",
+          "damage": 76,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 0
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 1,
+          "move": "激辛ストレート",
+          "damage": 26,
+          "hpAfter": 151,
+          "match": "weak"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 1,
+          "target": 1,
+          "move": "シュガーコート",
+          "damage": 144,
+          "hpAfter": 0,
+          "match": "strong",
+          "reason": "甘さが辛さをまろやかにした"
+        },
+        {
+          "t": "down",
+          "side": 1,
+          "slot": 1
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 2,
+          "move": "スパイス渦巻き",
+          "damage": 59,
+          "hpAfter": 106,
+          "match": "even"
+        },
+        {
+          "t": "round",
+          "n": 3
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 1,
+          "move": "泡立ちタックル",
+          "damage": 60,
+          "hpAfter": 91,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 2,
+          "move": "スパイス渦巻き",
+          "damage": 54,
+          "hpAfter": 52,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 1,
+          "target": 2,
+          "move": "シュガーコート",
+          "damage": 93,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 1,
+          "slot": 2
+        },
+        {
+          "t": "end",
+          "winner": 0,
+          "reason": "ko"
+        }
+      ]
+    },
+    {
+      "a": [
+        {
+          "jan": "9784060000002",
+          "lotSeed": "1:20401",
+          "profile": {
+            "flavor": "blacktea",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "2000001234563",
+          "lotSeed": "1:20402"
+        },
+        {
+          "jan": "0000049123456",
+          "lotSeed": "1:20403",
+          "profile": {
+            "flavor": "beer",
+            "source": "off"
+          }
+        }
+      ],
+      "b": [
+        {
+          "jan": "4155957342829",
+          "lotSeed": "1:20408",
+          "profile": {
+            "flavor": "grapefruit",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "4362236519807",
+          "lotSeed": "1:20409"
+        },
+        {
+          "jan": "4615254454781",
+          "lotSeed": "1:20410",
+          "profile": {
+            "flavor": "grape",
+            "source": "off"
+          }
+        }
+      ],
+      "seed": "golden:1",
+      "winner": 1,
+      "events": [
+        {
+          "t": "round",
+          "n": 1
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 0,
+          "move": "うす塩ガード",
+          "damage": 49,
+          "hpAfter": 125,
+          "match": "weak"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 0,
+          "move": "ルビーしぶき",
+          "damage": 74,
+          "hpAfter": 51,
+          "match": "strong",
+          "reason": "酸味が苦みをさっぱり流した"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 0,
+          "move": "ひとふさアタック",
+          "damage": 69,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 0
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 0,
+          "move": "泡立ちタックル",
+          "damage": 67,
+          "hpAfter": 86,
+          "match": "weak"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 1,
+          "target": 0,
+          "move": "炭酸はじけ",
+          "damage": 67,
+          "hpAfter": 19,
+          "match": "even"
+        },
+        {
+          "t": "round",
+          "n": 2
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 1,
+          "move": "うす塩ガード",
+          "damage": 70,
+          "hpAfter": 65,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 1,
+          "move": "ルビーしぶき",
+          "damage": 65,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 1
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 2,
+          "move": "ひとふさアタック",
+          "damage": 72,
+          "hpAfter": 132,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 0,
+          "move": "泡立ちタックル",
+          "damage": 66,
+          "hpAfter": 0,
+          "match": "weak"
+        },
+        {
+          "t": "down",
+          "side": 1,
+          "slot": 0
+        },
+        {
+          "t": "round",
+          "n": 3
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 2,
+          "move": "うす塩ガード",
+          "damage": 47,
+          "hpAfter": 85,
+          "match": "weak"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 2,
+          "move": "ひとふさアタック",
+          "damage": 68,
+          "hpAfter": 17,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 1,
+          "move": "泡立ちタックル",
+          "damage": 134,
+          "hpAfter": 61,
+          "match": "strong",
+          "reason": "苦みが塩気を押さえこんだ"
+        },
+        {
+          "t": "round",
+          "n": 4
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 2,
+          "move": "うす塩ガード",
+          "damage": 44,
+          "hpAfter": 0,
+          "match": "weak"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 2
+        },
+        {
+          "t": "end",
+          "winner": 1,
+          "reason": "ko"
+        }
+      ]
+    },
+    {
+      "a": [
+        {
+          "jan": "0036000291452",
+          "lotSeed": "1:20402",
+          "profile": {
+            "flavor": "grapefruit",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "4352965979379",
+          "lotSeed": "1:20403"
+        },
+        {
+          "jan": "4063906149248",
+          "lotSeed": "1:20404",
+          "profile": {
+            "flavor": "grape",
+            "source": "off"
+          }
+        }
+      ],
+      "b": [
+        {
+          "jan": "4274445339575",
+          "lotSeed": "1:20409",
+          "profile": {
+            "flavor": "peach",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "4826963358554",
+          "lotSeed": "1:20410"
+        },
+        {
+          "jan": "4487946527772",
+          "lotSeed": "1:20411",
+          "profile": {
+            "flavor": "apple",
+            "source": "off"
+          }
+        }
+      ],
+      "seed": "golden:2",
+      "winner": 1,
+      "events": [
+        {
+          "t": "combo",
+          "side": 1,
+          "name": "フルーツポンチ",
+          "slots": [
+            0,
+            2
+          ]
+        },
+        {
+          "t": "round",
+          "n": 1
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 1,
+          "target": 0,
+          "move": "ひりひり連打",
+          "damage": 38,
+          "hpAfter": 232,
+          "match": "weak"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 0,
+          "move": "シャキッと一撃",
+          "damage": 81,
+          "hpAfter": 126,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 0,
+          "move": "白桃のささやき",
+          "damage": 96,
+          "hpAfter": 30,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 0,
+          "move": "キュッと酸っぱ",
+          "damage": 51,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 0
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 0,
+          "move": "グレープしぶき",
+          "damage": 91,
+          "hpAfter": 141,
+          "match": "even"
+        },
+        {
+          "t": "round",
+          "n": 2
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 1,
+          "target": 0,
+          "move": "ひりひり連打",
+          "damage": 41,
+          "hpAfter": 100,
+          "match": "weak"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 1,
+          "move": "シャキッと一撃",
+          "damage": 111,
+          "hpAfter": 78,
+          "match": "strong",
+          "reason": "甘さが辛さをまろやかにした"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 1,
+          "move": "白桃のささやき",
+          "damage": 109,
+          "hpAfter": 0,
+          "match": "strong",
+          "reason": "甘さが辛さをまろやかにした"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 1
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 2,
+          "move": "キュッと酸っぱ",
+          "damage": 52,
+          "hpAfter": 116,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 0,
+          "move": "グレープしぶき",
+          "damage": 82,
+          "hpAfter": 18,
+          "match": "even"
+        },
+        {
+          "t": "round",
+          "n": 3
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 2,
+          "move": "シャキッと一撃",
+          "damage": 78,
+          "hpAfter": 38,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 2,
+          "move": "白桃のささやき",
+          "damage": 80,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 2
+        },
+        {
+          "t": "end",
+          "winner": 1,
+          "reason": "ko"
+        }
+      ]
+    },
+    {
+      "a": [
+        {
+          "jan": "4273264364577",
+          "lotSeed": "1:20403",
+          "profile": {
+            "flavor": "peach",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "4460077298803",
+          "lotSeed": "1:20404"
+        },
+        {
+          "jan": "4158455738095",
+          "lotSeed": "1:20405",
+          "profile": {
+            "flavor": "apple",
+            "source": "off"
+          }
+        }
+      ],
+      "b": [
+        {
+          "jan": "4165566755927",
+          "lotSeed": "1:20410",
+          "profile": {
+            "flavor": "vinegar",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "4285368477695",
+          "lotSeed": "1:20411"
+        },
+        {
+          "jan": "4981159053511",
+          "lotSeed": "1:20412",
+          "profile": {
+            "flavor": "milk",
+            "source": "off"
+          }
+        }
+      ],
+      "seed": "golden:3",
+      "winner": 1,
+      "events": [
+        {
+          "t": "combo",
+          "side": 0,
+          "name": "フルーツポンチ",
+          "slots": [
+            0,
+            2
+          ]
+        },
+        {
+          "t": "round",
+          "n": 1
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 0,
+          "move": "すっぱ顔",
+          "damage": 92,
+          "hpAfter": 49,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 0,
+          "move": "とろけるハグ",
+          "damage": 56,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 0
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 0,
+          "move": "蜜のしずく",
+          "damage": 81,
+          "hpAfter": 153,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 1,
+          "move": "まろやかガード",
+          "damage": 73,
+          "hpAfter": 68,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 1,
+          "target": 0,
+          "move": "大人の一撃",
+          "damage": 28,
+          "hpAfter": 125,
+          "match": "weak"
+        },
+        {
+          "t": "round",
+          "n": 2
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 1,
+          "move": "すっぱ顔",
+          "damage": 129,
+          "hpAfter": 0,
+          "match": "strong",
+          "reason": "酸味が苦みをさっぱり流した"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 1
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 2,
+          "move": "とろけるハグ",
+          "damage": 50,
+          "hpAfter": 142,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 0,
+          "move": "蜜のしずく",
+          "damage": 81,
+          "hpAfter": 44,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 2,
+          "move": "まろやかガード",
+          "damage": 55,
+          "hpAfter": 87,
+          "match": "even"
+        },
+        {
+          "t": "round",
+          "n": 3
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 2,
+          "move": "すっぱ顔",
+          "damage": 69,
+          "hpAfter": 18,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 2,
+          "move": "とろけるハグ",
+          "damage": 42,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 2
+        },
+        {
+          "t": "end",
+          "winner": 1,
+          "reason": "ko"
+        }
+      ]
+    },
+    {
+      "a": [
+        {
+          "jan": "4213000721998",
+          "lotSeed": "1:20404",
+          "profile": {
+            "flavor": "vinegar",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "4369619739708",
+          "lotSeed": "1:20405"
+        },
+        {
+          "jan": "4178582320925",
+          "lotSeed": "1:20406",
+          "profile": {
+            "flavor": "milk",
+            "source": "off"
+          }
+        }
+      ],
+      "b": [
+        {
+          "jan": "4750431550891",
+          "lotSeed": "1:20411",
+          "profile": {
+            "flavor": "miso",
+            "source": "off"
+          }
+        },
+        {
+          "jan": "4527402926708",
+          "lotSeed": "1:20412"
+        },
+        {
+          "jan": "4751100917113",
+          "lotSeed": "1:20413",
+          "profile": {
+            "flavor": "seaweed",
+            "source": "off"
+          }
+        }
+      ],
+      "seed": "golden:4",
+      "winner": 1,
+      "events": [
+        {
+          "t": "combo",
+          "side": 1,
+          "name": "おにぎり定食",
+          "slots": [
+            2,
+            0
+          ]
+        },
+        {
+          "t": "round",
+          "n": 1
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 0,
+          "move": "キュッと酸っぱ",
+          "damage": 58,
+          "hpAfter": 191,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 1,
+          "target": 0,
+          "move": "とろみロック",
+          "damage": 70,
+          "hpAfter": 197,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 0,
+          "move": "みそ玉ころがし",
+          "damage": 114,
+          "hpAfter": 77,
+          "match": "strong",
+          "reason": "うまみが酸味を包みこんだ"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 0,
+          "target": 0,
+          "move": "ビネガーショット",
+          "damage": 39,
+          "hpAfter": 158,
+          "match": "weak"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 0,
+          "move": "うまみ爆発",
+          "damage": 103,
+          "hpAfter": 0,
+          "match": "strong",
+          "reason": "うまみが酸味を包みこんだ"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 0
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 0,
+          "move": "まろやかガード",
+          "damage": 50,
+          "hpAfter": 108,
+          "match": "even"
+        },
+        {
+          "t": "round",
+          "n": 2
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 1,
+          "move": "キュッと酸っぱ",
+          "damage": 43,
+          "hpAfter": 68,
+          "match": "weak"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 1,
+          "target": 0,
+          "move": "とろみロック",
+          "damage": 72,
+          "hpAfter": 36,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 0,
+          "target": 1,
+          "move": "みそ玉ころがし",
+          "damage": 70,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 1
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 2,
+          "move": "うまみ爆発",
+          "damage": 60,
+          "hpAfter": 165,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 0,
+          "move": "まろやかガード",
+          "damage": 54,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 1,
+          "slot": 0
+        },
+        {
+          "t": "round",
+          "n": 3
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 2,
+          "move": "キュッと酸っぱ",
+          "damage": 60,
+          "hpAfter": 105,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 2,
+          "target": 2,
+          "move": "うまみ爆発",
+          "damage": 68,
+          "hpAfter": 37,
+          "match": "even"
+        },
+        {
+          "t": "hit",
+          "side": 0,
+          "slot": 2,
+          "target": 1,
+          "move": "まろやかガード",
+          "damage": 57,
+          "hpAfter": 102,
+          "match": "even"
+        },
+        {
+          "t": "round",
+          "n": 4
+        },
+        {
+          "t": "hit",
+          "side": 1,
+          "slot": 1,
+          "target": 2,
+          "move": "キュッと酸っぱ",
+          "damage": 61,
+          "hpAfter": 0,
+          "match": "even"
+        },
+        {
+          "t": "down",
+          "side": 0,
+          "slot": 2
+        },
+        {
+          "t": "end",
+          "winner": 1,
+          "reason": "ko"
+        }
+      ]
+    }
   ]
 }

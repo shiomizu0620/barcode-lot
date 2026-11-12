@@ -6,6 +6,7 @@ import { drawStill, playMorph } from "./morph";
 import { renderCharacter } from "./render";
 import { beep, detectFromImage, startCamera, type CameraSession } from "./scan";
 import { getProfile, storedProfile } from "./profile";
+import { checkLetter, hasPendingLetter, initBattle, openPendingLetter } from "./battle-ui";
 
 const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector(sel) as T;
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -25,7 +26,7 @@ let camera: CameraSession | null = null;
 let busy = false;
 let current: { spec: Spec; look: LotLook; lot: Lot; res?: ScanResult } | null = null;
 
-function setView(v: "home" | "stage") {
+function setView(v: "home" | "stage" | "team" | "battle") {
   document.body.dataset.view = v;
   window.scrollTo({ top: 0 });
 }
@@ -166,6 +167,8 @@ function fillTag(spec: Spec, look: LotLook, lot: Lot, res?: ScanResult) {
 // ---- 棚 ----
 function renderShelf() {
   const lots = allLots();
+  $("#btn-battle").hidden = lots.length === 0;
+  $("#btn-letter").hidden = !(lots.length > 0 && hasPendingLetter());
   $(".shelf-empty").hidden = lots.length > 0;
   shelf.innerHTML = lots
     .slice(0, 40)
@@ -256,5 +259,9 @@ $("#dbg-reset").addEventListener("click", () => {
   say("記録を消しました");
 });
 
+initBattle({ setView: (v) => { setView(v); if (v === "home") renderShelf(); } });
+$("#btn-letter").addEventListener("click", () => openPendingLetter());
 renderShelf();
 setView("home");
+const letter = checkLetter();
+if (letter === "no-team") say("挑戦状が届いています。まず1体生んでから、棚の「挑戦状を受ける」で受けて立とう。");

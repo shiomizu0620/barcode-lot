@@ -15,6 +15,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html { -webkit-text-size-adjust: 100%; }
 
@@ -55,8 +56,10 @@ main {
 }
 
 /* ---- 画面の切り替え ---- */
-body[data-view="home"] .stage { display: none; }
-body[data-view="stage"] .home { display: none; }
+body:not([data-view="home"]) .home,
+body:not([data-view="stage"]) .stage,
+body:not([data-view="team"]) .team,
+body:not([data-view="battle"]) .battle { display: none; }
 
 /* ---- ホーム ---- */
 h1 {
@@ -221,6 +224,93 @@ label.btn:focus-within { outline: 3px solid var(--sale); outline-offset: 2px; }
 
 .credit { margin: 36px 0 0; font-size: 12px; color: #555a60; }
 .credit a { color: inherit; }
+
+.shelf-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.shelf-head h2 { margin: 0; }
+.shelf-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.shelf-actions .btn { min-height: 44px; font-size: 14px; padding: 0 14px; }
+.btn.sale { background: var(--sale); color: #fff; }
+
+/* ---- チーム選択 ---- */
+.back {
+  background: none; border: 0; padding: 14px 0 4px; font: 700 14px/1 var(--font-body); color: var(--ink);
+  cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+}
+.view-title { font-family: var(--font-display); font-weight: 400; font-size: 24px; line-height: 1.35; margin: 10px 0 12px; }
+.team-foe {
+  display: flex; justify-content: center; gap: 4px;
+  background: var(--ink); border-radius: 16px; padding: 10px 8px 4px;
+}
+.team-foe .mini { width: 92px; aspect-ratio: 1; }
+.team-foe svg { width: 100%; height: 100%; display: block; }
+.team-help { font-size: 14px; margin: 14px 0 8px; }
+.team-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; }
+.pick {
+  position: relative; width: 100%; display: flex; flex-direction: column; align-items: center;
+  background: #fff; border: 3px solid transparent; border-radius: 14px; padding: 4px 2px 8px; cursor: pointer; color: var(--ink);
+}
+.pick[aria-pressed="true"] { border-color: var(--ink); background: var(--pop); }
+.pick:focus-visible { outline: 3px solid var(--sale); outline-offset: 2px; }
+.pick .thumb { border-bottom: 0; }
+.pick-no {
+  position: absolute; top: -8px; left: -6px; width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--sale); color: #fff; font: 400 15px/1 var(--font-display);
+  border: 2.5px solid var(--ink);
+}
+.team-combos { min-height: 1.7em; margin: 14px 2px 0; font-weight: 700; font-size: 14px; }
+.team-actions { display: grid; gap: 10px; margin-top: 12px; }
+.team-msg { font-size: 13px; word-break: break-all; }
+
+/* ---- バトル ---- */
+.battle { padding-top: 14px; }
+.row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.fighter { position: relative; text-align: center; transition: opacity .4s, filter .4s; }
+.fighter-art { width: 100%; aspect-ratio: 1; }
+.fighter-art svg { width: 100%; height: 100%; display: block; }
+.fighter-name { font-weight: 700; font-size: 13px; line-height: 1.3; }
+.gauge {
+  height: 12px; margin: 4px 6px 0; border: 2.5px solid var(--ink); border-radius: 999px; overflow: hidden; background: #fff;
+}
+.gauge span { display: block; height: 100%; background: var(--pop); transition: width .35s ease-out; }
+.gauge-text { font-size: 11px; color: #3b3f45; }
+.fighter.boosted .fighter-name::after { content: "↑"; color: var(--sale); margin-left: 2px; }
+.row-mine .fighter.act { animation: hop-up .45s ease-out; }
+.row-foe .fighter.act { animation: hop-down .45s ease-out; }
+.fighter.hurt .fighter-art { animation: shake .35s linear; }
+.fighter.down { opacity: .35; filter: grayscale(1); }
+.fighter.down .fighter-art { transform: rotate(-12deg) translateY(8px); transition: transform .4s; }
+@keyframes hop-up { 40% { transform: translateY(-22px); } }
+@keyframes hop-down { 40% { transform: translateY(22px); } }
+@keyframes shake { 20% { translate: -5px 0; } 40% { translate: 5px 0; } 60% { translate: -3px 0; } 80% { translate: 3px 0; } }
+.dmg {
+  position: absolute; left: 50%; top: 28%; translate: -50% 0; pointer-events: none;
+  font: 400 20px/1 var(--font-display); color: var(--sale); -webkit-text-stroke: 1px #fff;
+  animation: rise .9s ease-out forwards;
+}
+.dmg[data-match="strong"] { font-size: 26px; }
+.dmg[data-match="weak"] { color: #5a5f66; font-size: 16px; }
+@keyframes rise { to { transform: translateY(-34px); opacity: 0; } }
+
+.battle-log {
+  margin: 12px 0; padding: 10px 14px; min-height: 118px;
+  background: #fff; border-top: 2px dashed var(--rule); border-bottom: 2px dashed var(--rule);
+  font-size: 14px; line-height: 1.55;
+}
+.battle-log p { margin: 0 0 4px; color: #6b7076; }
+.battle-log p:first-child { color: var(--ink); font-weight: 700; }
+.battle-log p[data-tone="strong"]:first-child { color: var(--sale); }
+.battle-log p[data-tone="combo"]:first-child { background: var(--pop); padding: 0 4px; border-radius: 4px; }
+.skip { width: 100%; margin-top: 14px; min-height: 44px; }
+.battle-result {
+  margin-top: 14px; background: var(--pop); border: 3px solid var(--ink); border-radius: 18px; padding: 16px 18px 18px; text-align: center;
+}
+.battle-result[data-win="1"] { background: #fff; }
+.battle-result-title { font: 400 44px/1.1 var(--font-display); margin: 0; }
+.battle-result-sub { margin: 6px 0 4px; font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fighter.act, .fighter.hurt .fighter-art, .dmg { animation: none; }
+}
 
 .debug-panel { display: none; margin-top: 32px; padding-top: 16px; border-top: 2px dashed var(--rule); }
 body.debug .debug-panel { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }

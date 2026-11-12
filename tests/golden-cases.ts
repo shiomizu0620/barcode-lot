@@ -1,6 +1,7 @@
 import { bars, kindOf, normalize, withCheck } from "../src/ean";
 import { lotLook, specFor } from "../src/creature";
 import { FLAVORS } from "../src/product";
+import { simulate } from "../src/battle";
 import { Rng } from "../src/rng";
 
 /** 決まった50個の番号と、各3ロット分の結果。 */
@@ -33,5 +34,13 @@ export function goldenCases() {
     const spec = specFor(jan, profile);
     return { jan, profile, spec, lots: ["1:20400"].map((seed) => ({ seed, look: lotLook(spec, seed) })) };
   });
-  return { base, withFlavor };
+  // バトル（アプリ版でも同じ試合になること）
+  const team = (k: number) =>
+    [0, 1, 2].map((i) => ({ jan: jans[(k * 3 + i) % jans.length], lotSeed: `1:${20400 + k + i}`, profile: i === 1 ? undefined : { flavor: FLAVORS[(k * 5 + i) % FLAVORS.length].id, source: "off" as const } }));
+  const battles = [0, 1, 2, 3, 4].map((k) => {
+    const a = team(k), b = team(k + 7);
+    const res = simulate(a, b, `golden:${k}`);
+    return { a, b, seed: `golden:${k}`, winner: res.winner, events: res.events };
+  });
+  return { base, withFlavor, battles };
 }
