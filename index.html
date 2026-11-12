@@ -106,9 +106,17 @@
     </section>
 
     <section class="battle" aria-label="バトル">
-      <div class="row row-foe"></div>
+      <div class="battle-bar">
+        <span class="battle-vs"></span>
+        <button type="button" id="battle-sound" class="sound" aria-pressed="true">音あり</button>
+      </div>
+      <div class="arena">
+        <div class="row row-foe"></div>
+        <div class="arena-mid"></div>
+        <div class="row row-mine"></div>
+        <div class="fx" aria-hidden="true"></div>
+      </div>
       <div class="battle-log" aria-live="polite"></div>
-      <div class="row row-mine"></div>
       <button type="button" id="battle-skip" class="btn skip">結果まで飛ばす</button>
       <div class="battle-result" hidden>
         <p class="battle-result-title"></p>
