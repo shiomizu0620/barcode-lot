@@ -1,7 +1,7 @@
 # バトル作り直しの計画
 
 「見ているだけ」のバトルを、「勝手に戦うけど、ここぞで自分が手を出せる」バトルに作り直す。
-この文書が設計と進め方の正本。実装するClaude Codeは、作業の前に必ずここを読む。
+バトルの設計と進め方の正本。全体の決まりと役割分担は `docs/architecture.md`。作業の前に両方読む。
 
 状態：**案**（★の付いた項目はしおみずの確認待ち。確認が取れたら★を外す）
 
@@ -23,7 +23,9 @@
 - 900ティック（90秒）で決着しなければ、残りの量の割合で判定（今と同じ）
 
 ### 攻撃
-- 各キャラは行動ゲージを持つ。毎ティック「キレ」に応じて溜まり、満タンで攻撃して0に戻る
+- 各キャラは行動ゲージを持つ。毎ティック「キレ」に応じて溜まり、満タンで**ため**に入る
+- ためは4ティック（0.4秒）。ためが終わった瞬間の相手の前衛に当たる。そのあとゲージは0に戻る
+- ためは画面に見える（体を引く）。見てから回せば、相性のいい子で受けられる。これが「回す」の腕の見せどころ
 - 攻撃の相手は、常に相手の**前衛**
 - ★前衛の攻撃は威力100%、後衛の攻撃は援護として50%
 - ダメージの式、味の輪（1.5倍／0.75倍）、組み合わせ技、そろい踏みは今のまま
@@ -48,23 +50,23 @@
 ## 3. 設計
 
 ### 決まり（破らない）
-1. **計算は純粋関数**。`src/battle/` の中では DOM・時刻・`Math.random` を使わない
-2. **同じ入力なら同じ結果**。入力は「両チーム・シード・操作の記録」。乱数は `src/rng.ts` の `Rng` だけ
-3. **状態は整数で持つ**（体力、ゲージ、ティック）。小数は1回の計算の中だけで使い、すぐ `Math.round` する。Flutter版と一致させるため
-4. キャラの生成（`creature.ts`、`render.ts`、`fixtures/golden.json`）には触らない
+1. **計算は純粋関数**。`src/core/` の中では DOM・時刻・`Math.random` を使わない（コンパイルで弾く）
+2. **同じ入力なら同じ結果**。入力は「両チーム・シード・操作の記録」。乱数は `Rng` だけ
+3. **状態は整数で持つ**（体力、ゲージ、ティック）。小数は1回の計算の中だけで使い、すぐ `Math.round` する
+4. キャラの生成（`creature.ts`、`render.ts`、`fixtures/golden.json`）の結果を変えない
 5. 画面は、計算が出した出来事（イベント）を再生するだけ。画面側で勝敗や数値を決めない
+6. 別の言語との一致は求めない（理由は `architecture.md` の2.）。答え合わせ用のバトルデータは作らない
 
 ### ファイル
 ```
-src/battle/types.ts    型（State, Input, BattleEvent, Tune）。最初に固める
-src/battle/engine.ts   createBattle(teamA, teamB, seed) / step(state, inputs) → events
-src/battle/ai.ts       cpuInputs(state, side) → Input[]
-src/battle/run.ts      runToEnd(teamA, teamB, seed, log?) 最後まで一気に回す
-src/battle/team.ts     今の battle.ts から移す：組み合わせ技、今日の挑戦者、挑戦状URL
-src/battle-ui.ts       画面。入力を拾って step に渡し、イベントを再生する
-src/sfx.ts             効果音（そのまま）
-scripts/balance.ts     たくさん回して統計を出す
-fixtures/battle-golden.json   決まった試合の結果。Flutter版の答え合わせ用
+src/core/battle/types.ts    型（State, Input, BattleEvent, Tune）。指示役が最初に固める
+src/core/battle/engine.ts   createBattle(teamA, teamB, seed) / step(state, inputs) → events
+src/core/battle/ai.ts       操作役3種：何もしない／CPU／上手い人（調整の物差し用）
+src/core/battle/run.ts      runToEnd(...) 最後まで一気に回す
+src/core/battle/team.ts     今の battle.ts から移す：組み合わせ技、今日の挑戦者、挑戦状URL
+src/battle-ui.ts            画面。入力を拾って step に渡し、イベントを再生する
+src/sfx.ts                  効果音（そのまま）
+scripts/balance.ts          たくさん回して統計を出す（npm run balance）
 ```
 
 ### 型の骨組み
@@ -75,7 +77,7 @@ type Input =
 
 interface State {
   tick: number;
-  fighters: Fighter[][];      // hp, act（行動ゲージ）を持つ
+  fighters: Fighter[][];      // hp, act（行動ゲージ）, windup（ための残り。0ならためていない）を持つ
   front: [number, number];    // 各チームの前衛のslot
   swapReadyAt: [number, number];
   special: [number, number];  // 必殺ゲージ
@@ -85,6 +87,8 @@ interface State {
 
 function step(s: State, inputs: Input[]): BattleEvent[];  // 1ティック進める
 ```
+
+イベントには `windup`（ため始め）を足す。画面は `windup` で体を引き、`hit` で突っ込む。ためが命中より先に届くので、動きを先に始められる。
 
 - 画面は `requestAnimationFrame` で実時間を測り、100ミリ秒たつごとに `step` を呼ぶ
 - 必殺技のなぞり中は `step` を呼ばない（時間が止まる）。終わったら出来を `Input` にして渡す
@@ -98,39 +102,38 @@ function step(s: State, inputs: Input[]): BattleEvent[];  // 1ティック進め
 | 段階 | 内容 | ブランチ | 終わりの条件 |
 |---|---|---|---|
 | 0 | 手応え（体当たり、揺れ、効果音） | `battle-feel` | 済。実機で確認してmainへ |
-| 1 | 型と計算（画面なし） | `battle-engine` | 下のテストが通る。今の画面は古い計算のまま動く |
+| 1 | coreを分ける＋新しい計算（画面なし） | `battle-engine` | 下のテストが通る。今の画面は古い計算のまま動く |
 | 2 | 画面をつなぐ＋回す | `battle-realtime` | スマホ幅で1試合を遊べる。録画を見せる |
-| 3 | 必殺技（ゲージ、縞なぞり） | `battle-special` | 同上 |
-| 4 | 調整と答え合わせデータ | `battle-tune` | 下の目安に入る。`battle-golden.json` を作る |
-| 5 | 友達テスト | — | 引継ぎの「次のステップ」へ戻る |
+| — | **友達テスト** | — | 「2個目を自分から読むか」「画像や挑戦状を送るか」に加えて「回すのを自分で見つけるか」を見る |
+| 3 | 必殺技（ゲージ、縞なぞり） | `battle-special` | テストの反応を見て、やるか・形を変えるか決めてから |
+| 4 | 数値の調整 | `battle-tune` | 下の目安に入る |
+
+段階2で止めて友達に見せるのは、必殺技まで作ってから「そもそもバトルを触らない」と分かるのを避けるため。
+
+### 段階1の中身（この順で）
+1. `src/core/` を作って `ean` `rng` `creature` `product` を移す。`tsconfig.core.json` を足して `npm run check` に入れる。`golden.json` は変わらないこと
+2. 指示役が `core/battle/types.ts` と受け入れテストを書く
+3. 並行で：A `engine.ts` `run.ts`／B `ai.ts` `scripts/balance.ts`／C `team.ts` への移動と既存テストの移し替え
+4. 作業を見ていない別のエージェントがレビュー
 
 ### 段階1のテスト
 - 同じ入力・同じ操作記録なら、状態もイベントも完全に同じ
 - 両方CPUで必ず決着する（400試合）
 - 回した直後はもう一度回せない。倒れた子には回せない
+- ため中に相手が回したら、命中するのは新しい前衛
 - 必殺ゲージが満タンでないと撃てない
 - 今あるテスト（味の輪、組み合わせ技、挑戦状の往復、今日の挑戦者）は移して残す
 
 ### 段階4の目安（`npm run balance` で1000試合）
 - 試合の長さ：中央値40〜60秒、90秒の判定になるのは5%以下
-- 何も操作しない人が「今日の挑戦者」に勝つ割合：35〜45%
-- うまく操作した人（相性で回す、必殺ぴったり）：70〜80%
+- 「何もしない」役が「今日の挑戦者」に勝つ割合：35〜45%
+- 「上手い人」役（ためを見て相性で回す、必殺ぴったり）：70〜80%
 - 先に選んだ側・後に選んだ側で勝率の差が3ポイント以内
 
-## 5. Claude Codeでの分業
+## 5. 分業
 
-指示役（メイン）が段階を1つずつ進める。分けて得になるところだけ分ける。
+役割と依頼の形は `docs/architecture.md` の6.。バトルで気をつける点だけ：
 
-- **段階1**：まず指示役が `types.ts` を書いて固める。そのあと並行で
-  - A：`engine.ts` と `run.ts`（テストを先に書く）
-  - B：`ai.ts` と `scripts/balance.ts`
-  - C：`team.ts` への移動と既存テストの移し替え
-- **段階2・3**：画面は1人で順番に。`battle-ui.ts` を複数人で同時に触らない
-- **段階4**：数値の調整は指示役が `balance` の結果を見ながら回す
-- **各段階の最後**：作業を見ていない別のエージェントにレビューさせる。見る点は「3.の決まりを破っていないか」「テストが条件を本当に確かめているか」
-
-どの作業でも守ること：
-- `npm test` と `npm run build` が通ってから終わりにする
-- 画面を変えたら、スマホ幅（390×844）で録画かスクショを撮って自分の目で確かめる
-- この文書と違うことをしたくなったら、実装する前に止まって聞く
-- 段階が終わったら、この文書の表と `CLAUDE.md`・`docs/spec.md` を直す
+- 並行で進めるのは段階1の3.だけ。型が固まる前に実装を始めない
+- 段階2・3の画面は1人で順番に。`battle-ui.ts` を複数人で同時に触らない
+- 段階4の数値の調整は、指示役が `npm run balance` の結果を見ながら回す

@@ -6,7 +6,8 @@
     "build": "vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
-    "golden": "vite-node scripts/golden.ts"
+    "golden": "vite-node scripts/golden.ts",
+    "check": "tsc --noEmit -p . && tsc --noEmit -p worker && vitest run && vite build"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261112.1",

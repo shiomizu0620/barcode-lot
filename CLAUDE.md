@@ -5,7 +5,8 @@
 ## 仕様・企画
 - 企画メモ: `docs/brief.md`（claude.aiのプロジェクト「バーコードバトル」の企画メモと同じ内容）
 - 試作の仕様: `docs/spec.md`
-- バトル作り直しの計画: `docs/battle-plan.md`（設計と進め方の正本。バトルを触る前に必ず読む）
+- 全体の構成と決まり・役割分担: `docs/architecture.md`（作業の前に必ず読む）
+- バトル作り直しの計画: `docs/battle-plan.md`（バトルを触る前に必ず読む）
 
 ## 技術構成
 - Vite + TypeScript（フレームワークなし）。キャラはSVGを文字列で組み立てる
@@ -34,6 +35,7 @@
 ## 起動
 - `npm i` → `npm run dev`（スマホから試すときは同じWi-Fiで表示されたURLへ。カメラはHTTPSかlocalhostでのみ動く）
 - `npm run build` で `dist/`（相対パスなので、どこに置いても動く）
+- `npm run check` で型チェック・テスト・ビルドをまとめて確認（作業の終わりに必ず通す）
 - `npm test` で答え合わせ用データとの一致を確認。生成ルールを意図して変えたときだけ `npm run golden` で作り直す
 - 配信: Cloudflare Workers（`wrangler.jsonc`。`/api/*` だけWorker、ほかは `dist/` の静的ファイル）。`main` へのpushで自動デプロイ
 - Yahoo!のClient IDは `npx wrangler secret put YAHOO_APPID`（無くても Open Food Facts だけで動く）
@@ -44,4 +46,4 @@
 - ロットは消費サイクル（試作では通常3日、お店のラベル1日、本・雑誌7日）が過ぎると新しく出る
 - 画像生成AIは使わない
 - バトル：内容量＝体力（ml）、濃さ＝攻撃、キレ＝素早さ、コク＝守り。味の輪 あまい→からい→うまい→すっぱい→にがい→しょっぱい→あまい（左が右に強い）
-- 挑戦状は `?vs=` にチーム（品番・ロット・味）を入れたURL。サーバーなしで同じ試合が再生される
+- 挑戦状は `?vs=` にチーム（品番・ロット・味）を入れたURL。サーバーなしで相手チームを再現できる
