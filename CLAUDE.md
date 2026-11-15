@@ -4,7 +4,8 @@
 
 ## 仕様・企画
 - 企画メモ: `docs/brief.md`（claude.aiのプロジェクト「バーコードバトル」の企画メモと同じ内容）
-- 試作の仕様: `docs/spec.md`
+- 今のアプリの中身: `docs/spec.md`（機能を変えたら同じPRで直す）
+- 決めたことと理由、未決定のこと: `docs/decisions.md`（新しく決まったら日付つきで足す）
 - 全体の構成と決まり・役割分担: `docs/architecture.md`（作業の前に必ず読む）
 - バトル作り直しの計画: `docs/battle-plan.md`（バトルを触る前に必ず読む）
 
