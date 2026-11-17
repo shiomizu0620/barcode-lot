@@ -9,7 +9,8 @@
 | `docs/spec.md` | 仕様（画面、キャラの決まり方、ロット、バトル） |
 | `docs/design.md` | 見た目と画面設計（色・文字・部品、画面の流れ） |
 | `docs/architecture.md` | 技術構成（フォルダと層、データの流れ、保存、API、配信） |
-| `docs/decisions.md` | 決めたことの記録（決めたこと / 理由 / 捨てた案） |
+| `docs/decisions.md` | 決めたことの記録。上に「前提」（しおみずが大事にしていること・大きな方針・まだ決めていないこと） |
+| `docs/battle-plan.md` | バトルの計画。できたところと、しおみずに決めてほしいこと（バトルを触る前に読む） |
 | `docs/ideas.md` | 範囲外で気づいたこと・あとでやる案 |
 
 ## 変えてはいけないこと
@@ -31,6 +32,8 @@
 - `npm i` → `npm run dev`（スマホから試すときは同じWi-Fiで表示されたURLへ。カメラはHTTPSかlocalhostでのみ動く）
 - `npm test` テスト（答え合わせ、バトル、ロット、層の決まり）
 - `npm run typecheck` 型チェック（画面側とWorker側）
+- `npm run check` 型チェック・テスト・ビルドをまとめて（作業の終わりに必ず通す。GitHub Actions も同じものを回す）
+- `npm run balance` 手を出せる試合の釣り合い（何もしない人・技だけ押す人・上手い人の勝率と試合の長さ）
 - `npm run build` で `dist/`（相対パスなので、どこに置いても動く）
 - `npm run golden` 答え合わせ用データの作り直し（生成ルールを意図して変えたときだけ）
 - D1 の用意と更新の手順は `docs/architecture.md` の「配信」。表を変えるときは `migrations/` に番号付きのSQLを足す
@@ -38,5 +41,6 @@
 - `gallery.html` はキャラ見本帳（`#文字列` で並びが変わる）
 
 ## 進め方
+- main に入れる前に、しおみずが確認する（main は本番にそのまま出る）。終わりの条件と役割分担は `docs/architecture.md` の「6. 進め方」
 - 仕様・画面・技術構成を変えたら、上の表の文書も同じ変更で直す
 - 自分で決めたことは `docs/decisions.md` に1〜3行で残す。範囲外の気づきは `docs/ideas.md`

@@ -23,7 +23,7 @@ src/
     creature.ts   品番 → キャラの仕様、ロット → 個体差
     product.ts    商品の文字 → 味・色・技の辞書
     battle.ts     自動の試合の計算、味の輪、組み合わせ技、今日の挑戦者、挑戦状の符号化。調整値は TUNE
-    live.ts       手を出せる試合の計算（0.1秒ごとに1コマ）。CPUの操作もここ。調整値は LIVE
+    live.ts       手を出せる試合の計算（0.1秒ごとに1コマ。ため・技・入れ替え）。CPUの操作もここ。調整値は LIVE
   art/      キャラの絵
     render.ts     キャラのSVG（文字列）
     morph.ts      変身演出
@@ -35,12 +35,14 @@ src/
     daily.ts      今日の挑戦者との結果
   device/   端末の機能
     reader.ts     カメラ・写真からの読み取り、「ピッ」
+    sfx.ts        バトルの効果音と振動（音源ファイルなし）
   ui/       画面
     router.ts         URLの # で画面を切り替える
     dom.ts parts.ts   小さな道具、複数の画面で使う部品（キャラ、味の表示、味の輪）
     hatch.ts          生まれる流れ（検証 → 中身を調べる → ロットを記録 → 値札へ）
     battle-session.ts バトル中に画面をまたいで持つもの（相手、挑戦状、えらんだチーム）
     receipt.ts        試合の結果（レシート）
+    battle-fx.ts      バトルの手応え（体当たり・縞のはじけ・数字・揺れ・帯・値札）。見た目だけ
     share-image.ts    画像にする
     debug.ts          試作用の操作の出し入れ
     views/            画面ごとに1ファイル（scan, shelf, tag, battle-hub, battle-team, battle-live, battle-play）
@@ -54,6 +56,8 @@ tests/            答え合わせ、バトル（自動・手を出せる）、�
 fixtures/golden.json  答え合わせ用データ
 scripts/golden.ts     その作り直し
 scripts/makers.ts     メーカー番号の表の作り直し
+scripts/balance.ts    手を出せる試合の釣り合いを測る（npm run balance）
+.github/workflows/check.yml  main 以外への push と PR で npm run check を回す
 ```
 
 ### 層の決まり
@@ -86,6 +90,7 @@ scripts/makers.ts     メーカー番号の表の作り直し
 | `barcode-lot:debug-offset` | localStorage | 試作用にすすめた時間（ミリ秒） |
 | `barcode-lot:letter` `…:letter-done` | sessionStorage | 届いた挑戦状と、もう戦ったか |
 | `barcode-lot:debug` | sessionStorage | 試作用の操作を出すか |
+| `sfx` | localStorage | 効果音を消したか（`off` / `on`） |
 
 キーや中身の形を変えると、前の記録が読めなくなる。変えるときは `v2` を足して読み替える。
 
@@ -127,3 +132,34 @@ scripts/makers.ts     メーカー番号の表の作り直し
 
 D1 は無料プランで使える。表を変えるときは `migrations/0002_….sql` を足し、3 をもう一度流す。
 - `vite.config.ts` は相対パス（`base: "./"`）で、入口は `index.html` と `gallery.html` の2つ
+
+## 6. 進め方
+
+### 終わりの条件（どの作業でも）
+1. `npm run check` が通る（型チェック2つ・テスト・ビルド）。main 以外のブランチへの push と PR では GitHub Actions が同じものを回す
+2. 画面を変えたら、スマホ幅（390×844）でスクショか録画を撮り、自分の目で確かめる
+3. 変えた内容に合わせて `CLAUDE.md` と `docs/` を直す
+4. **main に入れるのは、しおみずが確認したあと**（main は本番にそのまま出る）
+
+### 確認用のURL
+- `main` への push → 本番 https://barcode-lot.shiomizu.workers.dev
+- それ以外のブランチ → プレビューURL。Cloudflare の Settings > Build > Branch control で Preview Builds を有効にする（**しおみずの作業**）。2026-11-17 時点では、ブランチの build は失敗している（ログは Cloudflare の管理画面でしか見られない）
+
+### 役割分担（Orca で指示役と実装役に分けるとき）
+**指示役がやること**
+- 型（インターフェース）と受け入れテストを先に書く。実装役の仕事は「このテストを通すこと」になる
+- 作業を下の形の依頼にして渡す。同じファイルを2人に同時に触らせない
+- 出てきた差分をレビューする。見る点：決まり（`battle-plan.md` の4.、この文書の層の決まり）、テストが条件を本当に確かめているか、頼んでいない変更が混ざっていないか
+
+**依頼の形**
+```
+目的：（1文）
+触るファイル：
+触らないファイル：
+通すテスト：
+終わりの条件：npm run check ＋（画面なら録画）
+```
+
+**聞かずに決めてよいこと**：変数名・関数の分け方、ファイル内の構成、テストの追加、`TUNE` / `LIVE` の仮の数値、演出の細かいタイミング、文言の言い回し
+
+**止まって聞くこと**：`docs/` に書いてある決まりと違うことをしたくなったとき、`fixtures/golden.json` が変わるとき、依存パッケージを足すとき、保存データの形を変えるとき、main に入れるとき
