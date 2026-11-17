@@ -6,6 +6,7 @@
     "build": "vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit -p . && tsc --noEmit -p worker",
     "golden": "vite-node scripts/golden.ts"
   },
   "devDependencies": {

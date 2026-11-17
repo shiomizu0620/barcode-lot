@@ -9,5 +9,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["./*.ts", "../src/product.ts", "../src/ean.ts", "../src/creature.ts", "../src/rng.ts"]
+  "include": ["./*.ts", "../src/core/*.ts"]
 }

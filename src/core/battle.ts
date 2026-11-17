@@ -2,6 +2,7 @@
 // 同じ入力（両チーム＋シード）なら必ず同じ結果になる。挑戦状URLでも同じ試合が再生される。
 
 import { lotLook, specFor, type LotLook, type Spec, type Taste } from "./creature";
+import { withCheck } from "./ean";
 import type { ProductProfile } from "./product";
 import { Rng } from "./rng";
 
@@ -19,8 +20,9 @@ export const TUNE = {
 };
 
 // 味の輪：それぞれ次の味に強い
-const RING: Taste[] = ["あまい", "からい", "うまい", "すっぱい", "にがい", "しょっぱい"];
-const RING_REASON: Record<Taste, string> = {
+export const TASTE_RING: readonly Taste[] = ["あまい", "からい", "うまい", "すっぱい", "にがい", "しょっぱい"];
+const RING = TASTE_RING;
+export const RING_REASON: Record<Taste, string> = {
   あまい: "甘さが辛さをまろやかにした",
   からい: "辛さがうまみをかき消した",
   うまい: "うまみが酸味を包みこんだ",
@@ -34,6 +36,15 @@ export function matchup(att: Taste, def: Taste): "strong" | "weak" | "even" {
   if ((i + 1) % RING.length === j) return "strong";
   if ((j + 1) % RING.length === i) return "weak";
   return "even";
+}
+
+/** その味が強く出られる相手の味。 */
+export function strongAgainst(taste: Taste): Taste {
+  return RING[(RING.indexOf(taste) + 1) % RING.length];
+}
+/** その味が苦手な相手の味。 */
+export function weakAgainst(taste: Taste): Taste {
+  return RING[(RING.indexOf(taste) + RING.length - 1) % RING.length];
 }
 
 // ---- 組み合わせ技（買い合わせ） ----
@@ -93,6 +104,11 @@ function makeFighter(m: Member, side: 0 | 1, slot: number): Fighter {
   return { side, slot, spec, look, maxHp: hp, hp, atk: look.stats.koi, def: look.stats.koku, spd: look.stats.kire };
 }
 
+/** チームの味（Flavor.id）の並びから、成立する組み合わせ技を返す。画面の予告用。 */
+export function combosOf(flavors: (string | undefined)[]): Combo[] {
+  return COMBOS.filter((c) => flavors.some((a, i) => a && c.flavors[0].includes(a) && flavors.some((b, j) => j !== i && b && c.flavors[1].includes(b))));
+}
+
 function findCombos(team: Fighter[]): { combo: Combo; slots: number[] }[] {
   const out: { combo: Combo; slots: number[] }[] = [];
   for (const c of COMBOS) {
@@ -109,12 +125,10 @@ function findCombos(team: Fighter[]): { combo: Combo; slots: number[] }[] {
   return out;
 }
 
-export function simulate(teamA: Member[], teamB: Member[], seed: string): BattleResult {
-  const r = new Rng("battle:" + seed);
+/** 試合前の準備：両チームを並べ、組み合わせ技と「そろい踏み」を能力に反映する。乱数は使わない。 */
+export function lineUp(teamA: Member[], teamB: Member[]): { fighters: Fighter[][]; events: BattleEvent[] } {
   const fighters: Fighter[][] = [teamA.map((m, i) => makeFighter(m, 0, i)), teamB.map((m, i) => makeFighter(m, 1, i))];
   const events: BattleEvent[] = [];
-
-  // 試合前の効果
   for (const side of [0, 1] as const) {
     const team = fighters[side];
     for (const { combo, slots } of findCombos(team)) {
@@ -126,6 +140,12 @@ export function simulate(teamA: Member[], teamB: Member[], seed: string): Battle
       events.push({ t: "trio", side, taste: team[0].spec.taste });
     }
   }
+  return { fighters, events };
+}
+
+export function simulate(teamA: Member[], teamB: Member[], seed: string): BattleResult {
+  const r = new Rng("battle:" + seed);
+  const { fighters, events } = lineUp(teamA, teamB);
 
   const snapshot = fighters.map((t) => t.map((f) => ({ ...f })));
   const alive = (side: 0 | 1) => fighters[side].filter((f) => f.hp > 0);
@@ -179,9 +199,7 @@ export function dailyChallenger(dateKey: string, flavorIds: string[]): Member[] 
   return [0, 1, 2].map(() => {
     let first12 = "49";
     for (let i = 0; i < 10; i++) first12 += r.int(0, 9);
-    let sum = 0;
-    for (let i = 0; i < 12; i++) sum += Number(first12[i]) * (i % 2 === 0 ? 1 : 3);
-    const jan = first12 + ((10 - (sum % 10)) % 10);
+    const jan = withCheck(first12);
     return { jan, lotSeed: `cpu:${dateKey}:${r.int(1, 9999)}`, profile: { flavor: r.pick(flavorIds), source: "none" } };
   });
 }

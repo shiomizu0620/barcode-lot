@@ -1,8 +1,8 @@
 // 変身演出：読んだバーコードの棒がはがれて飛び、キャラの縞とクレストに組み上がる。
 
-import { bars } from "./ean";
+import { bars } from "../core/ean";
 import { CX, GROUND, INK, renderCharacter, type Slot } from "./render";
-import type { LotLook, Spec } from "./creature";
+import type { LotLook, Spec } from "../core/creature";
 
 const NS = "http://www.w3.org/2000/svg";
 const ease = {

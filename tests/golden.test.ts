@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import golden from "../fixtures/golden.json";
 import { goldenCases } from "./golden-cases";
-import { bars, normalize } from "../src/ean";
+import { bars, normalize } from "../src/core/ean";
 
 describe("同じ番号からは、いつでも同じキャラ", () => {
   it("答え合わせ用データと一致する", () => {

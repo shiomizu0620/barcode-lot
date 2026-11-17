@@ -2,44 +2,41 @@
 
 商品のバーコードを読むと、その縞をまとったキャラが生まれるWebゲームの試作。
 
-## 仕様・企画
-- 企画メモ: `docs/brief.md`（claude.aiのプロジェクト「バーコードバトル」の企画メモと同じ内容）
-- 試作の仕様: `docs/spec.md`
+## 文書
+| 文書 | 中身 |
+|---|---|
+| `docs/brief.md` | 企画の要点（何を作るか、決まっていること、使わない言葉） |
+| `docs/spec.md` | 仕様（画面、キャラの決まり方、ロット、バトル） |
+| `docs/design.md` | 見た目と画面設計（色・文字・部品、画面の流れ） |
+| `docs/architecture.md` | 技術構成（フォルダと層、データの流れ、保存、API、配信） |
+| `docs/decisions.md` | 決めたことの記録（決めたこと / 理由 / 捨てた案） |
+| `docs/ideas.md` | 範囲外で気づいたこと・あとでやる案 |
 
-## 技術構成
+## 変えてはいけないこと
+- 品番（JAN）が同じなら、どの端末でも同じ姿・名前・味・技。`src/core/` の結果は `fixtures/golden.json` と完全一致させる（アプリ版をFlutterで作るときの答え合わせ）
+- 生成ルールを意図して変えたときだけ `npm run golden` で作り直す。それ以外で `npm test` の答え合わせが落ちたら、直すのはコード側
+- 商品名・ブランド名は返さない・保存しない・表示しない（残すのは「ぶどう」のような分類だけ）
+- 外部のAPIは、規約で使い道が合うものだけ使う（Yahoo!ショッピングのAPIは、Yahoo!に確かめるまで使わない。`docs/decisions.md`）
+- 画像生成AIは使わない
+- 用語は品番・ロット・限定パッケージ。使わない言葉は `docs/brief.md`
+- 挑戦状のURL（`?vs=`）と端末内の保存キー（`docs/architecture.md`）は、形を変えると前のデータが読めなくなる
+
+## 技術構成（要約）
 - Vite + TypeScript（フレームワークなし）。キャラはSVGを文字列で組み立てる
-- 読み取り: `barcode-detector`（ZXing WASM）。`public/zxing_reader.wasm` を自前配信。端末に標準の BarcodeDetector があればそちらを使う
-- データ: キャラとロットは端末内（localStorage）。商品プロフィール（味の分類）だけWorkerに聞く
-- 商品の中身: `worker/index.ts` の `/api/product/:jan` が Yahoo!ショッピング（`YAHOO_APPID` があれば）→ Open Food Facts の順に調べ、`src/product.ts` の辞書で味を決める。商品名・ブランド名は返さない・保存しない
-- 一度決まった品番のプロフィールは端末に保存し、キャラの見た目が後から変わらないようにする
-- 本番の予定: Cloudflare Workers + D1
-- アプリ版は後でFlutterで作る。キャラ生成は `fixtures/golden.json` と完全一致させる（同じ番号から必ず同じキャラ）
-
-## 主なファイル
-- `src/ean.ts` JANの検証・縞（95モジュール）の再現
-- `src/creature.ts` 品番→キャラの仕様、ロット→個体差
-- `src/render.ts` キャラのSVG
-- `src/morph.ts` 変身演出
-- `src/lots.ts` ロットの記録と消費サイクル
-- `src/scan.ts` カメラ・写真からの読み取り
-- `src/product.ts` 商品の文字→味・色・技の辞書
-- `src/profile.ts` 商品プロフィールの取得と端末内保存
-- `worker/index.ts` Cloudflare Worker（静的配信と商品API）
-- `src/battle.ts` バトルの計算（3対3の自動バトル、味の相性、組み合わせ技、今日の挑戦者、挑戦状URL）。調整用の数値は `TUNE`
-- `src/battle-ui.ts` チーム選択とバトル画面
-- `gallery.html` キャラ見本帳（ランダムな番号で一覧表示。`#文字列` で並びが変わる）
+- `src/` は層で分ける。`core`（決まり方・計算）← `art`（絵）・`store`（端末内の記録）・`device`（カメラ）← `ui`（画面）。矢印の向きにしか読まない（`tests/layers.test.ts` で確認）
+- データは端末内（localStorage）。品番ごとの中身（味）だけ Cloudflare Worker（`worker/index.ts`）が D1 に1つ持ち、全員に同じものを配る
+- 配信は Cloudflare Workers。`main` へのpushで自動デプロイ
 
 ## 起動
 - `npm i` → `npm run dev`（スマホから試すときは同じWi-Fiで表示されたURLへ。カメラはHTTPSかlocalhostでのみ動く）
+- `npm test` テスト（答え合わせ、バトル、ロット、層の決まり）
+- `npm run typecheck` 型チェック（画面側とWorker側）
 - `npm run build` で `dist/`（相対パスなので、どこに置いても動く）
-- `npm test` で答え合わせ用データとの一致を確認。生成ルールを意図して変えたときだけ `npm run golden` で作り直す
-- 配信: Cloudflare Workers（`wrangler.jsonc`。`/api/*` だけWorker、ほかは `dist/` の静的ファイル）。`main` へのpushで自動デプロイ
-- Yahoo!のClient IDは `npx wrangler secret put YAHOO_APPID`（無くても Open Food Facts だけで動く）
-- `#debug` を付けて開くと「時間を1日すすめる」「記録を消す」が出る
+- `npm run golden` 答え合わせ用データの作り直し（生成ルールを意図して変えたときだけ）
+- D1 の用意と更新の手順は `docs/architecture.md` の「配信」。表を変えるときは `migrations/` に番号付きのSQLを足す
+- `#debug` を付けて開くと、「読む」の下に「時間を1日すすめる」「記録を消す」が出る
+- `gallery.html` はキャラ見本帳（`#文字列` で並びが変わる）
 
-## 決まっていること
-- 品番（JAN）が同じなら、どの端末でも同じ姿・名前・味・技
-- ロットは消費サイクル（試作では通常3日、お店のラベル1日、本・雑誌7日）が過ぎると新しく出る
-- 画像生成AIは使わない
-- バトル：内容量＝体力（ml）、濃さ＝攻撃、キレ＝素早さ、コク＝守り。味の輪 あまい→からい→うまい→すっぱい→にがい→しょっぱい→あまい（左が右に強い）
-- 挑戦状は `?vs=` にチーム（品番・ロット・味）を入れたURL。サーバーなしで同じ試合が再生される
+## 進め方
+- 仕様・画面・技術構成を変えたら、上の表の文書も同じ変更で直す
+- 自分で決めたことは `docs/decisions.md` に1〜3行で残す。範囲外の気づきは `docs/ideas.md`

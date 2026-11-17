@@ -1,8 +1,8 @@
 // 開発用：生成されるキャラを一覧で見る。絵柄の確認や、パーツを描く人への説明に使う。
-import { withCheck } from "./ean";
-import { lotLook, specFor } from "./creature";
-import { renderCharacter } from "./render";
-import { Rng } from "./rng";
+import { withCheck } from "./core/ean";
+import { lotLook, specFor } from "./core/creature";
+import { renderCharacter } from "./art/render";
+import { Rng } from "./core/rng";
 
 const r = new Rng(location.hash.slice(1) || "gallery");
 const card = (jan: string, seed: string) => {

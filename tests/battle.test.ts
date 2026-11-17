@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { dailyChallenger, decodeTeam, encodeTeam, matchup, simulate, type Member } from "../src/battle";
-import { FLAVORS } from "../src/product";
-import { withCheck } from "../src/ean";
-import { Rng } from "../src/rng";
+import { combosOf, dailyChallenger, decodeTeam, encodeTeam, matchup, simulate, strongAgainst, TASTE_RING, weakAgainst, type Member } from "../src/core/battle";
+import { specFor } from "../src/core/creature";
+import { FLAVORS } from "../src/core/product";
+import { withCheck } from "../src/core/ean";
+import { Rng } from "../src/core/rng";
 
 const ids = FLAVORS.map((f) => f.id);
 const team = (seed: string): Member[] => {
@@ -24,6 +25,20 @@ describe("バトル", () => {
     expect(matchup("からい", "あまい")).toBe("weak");
     expect(matchup("しょっぱい", "あまい")).toBe("strong");
     expect(matchup("あまい", "うまい")).toBe("even");
+  });
+  it("強い相手・苦手な相手は、味の輪のとなり同士", () => {
+    for (const t of TASTE_RING) {
+      expect(matchup(t, strongAgainst(t))).toBe("strong");
+      expect(matchup(t, weakAgainst(t))).toBe("weak");
+    }
+  });
+  it("チーム選びの予告と、試合で出る組み合わせ技は同じ", () => {
+    for (let i = 0; i < 200; i++) {
+      const a = team("combo" + i);
+      const shown = combosOf(a.map((m) => specFor(m.jan, m.profile).flavor)).map((c) => c.name);
+      const played = simulate(a, team("x" + i), "s").events.flatMap((e) => (e.t === "combo" && e.side === 0 ? [e.name] : []));
+      expect(shown).toEqual(played);
+    }
   });
   it("晩酌コンボが出る", () => {
     const a: Member[] = [

@@ -1,8 +1,8 @@
-import { bars, kindOf, normalize, withCheck } from "../src/ean";
-import { lotLook, specFor } from "../src/creature";
-import { FLAVORS } from "../src/product";
-import { simulate } from "../src/battle";
-import { Rng } from "../src/rng";
+import { bars, kindOf, normalize, withCheck } from "../src/core/ean";
+import { lotLook, specFor } from "../src/core/creature";
+import { FLAVORS } from "../src/core/product";
+import { simulate } from "../src/core/battle";
+import { Rng } from "../src/core/rng";
 
 /** 決まった50個の番号と、各3ロット分の結果。 */
 export function goldenCases() {

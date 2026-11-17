@@ -1,8 +1,8 @@
 // キャラのSVGを組み立てる。
 // 縞は本物のバーコードの棒そのもの。体の模様に24本、頭の飾り（クレスト）に長い6本を使う。
 
-import { bars, type Bar } from "./ean";
-import type { LotLook, Spec } from "./creature";
+import { bars, type Bar } from "../core/ean";
+import type { LotLook, Spec } from "../core/creature";
 
 export const INK = "#1D1D22";
 const WHITE = "#FFFFFF";
