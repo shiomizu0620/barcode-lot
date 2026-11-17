@@ -3,11 +3,19 @@
   "name": "barcode-lot",
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
+  "account_id": "732e0dab1c1857b66ea523b623dc26f8", // akubi0302 のアカウント
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
-  }
-  // Yahoo!のClient IDは `npx wrangler secret put YAHOO_APPID` で設定（任意）
+  },
+  // 品番ごとの中身（味）。表は migrations/ 。更新は `npx wrangler d1 migrations apply barcode-lot --remote`
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "barcode-lot",
+      "database_id": "9e70a35d-0bf5-4dd6-b4da-180e9986b18b"
+    }
+  ]
 }
