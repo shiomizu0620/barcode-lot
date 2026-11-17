@@ -1,0 +1,31 @@
+/* 色・文字・寸法の決まり。見た目の方向は docs/design.md。
+   舞台はスーパーの売り場：感熱紙の白、値札の黄、特売の赤、インクの黒。 */
+
+:root {
+  --paper: #f3f5f2; /* 感熱紙 */
+  --paper-2: #e6eae7;
+  --ink: #1d1d22; /* インク */
+  --ink-soft: #555a60; /* 補足の文字 */
+  --pop: #ffd83d; /* 値札の黄 */
+  --sale: #e63b2e; /* 特売の赤 */
+  --rule: #b6bcc0; /* レシートの灰 */
+  --white: #fff;
+
+  --font-display: "Dela Gothic One", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-digits: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --line: 3px; /* 太い黒の輪郭線 */
+  --key-depth: 6px; /* レジのキーの下辺 */
+  --radius: 6px;
+  --radius-card: 8px;
+  --column: 460px; /* 本文の幅 */
+  --gutter: 20px;
+  --tabs-height: 56px;
+
+  color-scheme: light;
+}
+
+@media (min-width: 720px) {
+  :root { --column: 520px; }
+}

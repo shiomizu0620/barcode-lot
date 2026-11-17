@@ -1,0 +1,23 @@
+/* 「棚」。棚板と値札の形は base.css（.shelf-list / .shelf-tag）。 */
+
+.filters { display: flex; gap: 6px; overflow-x: auto; margin: 0 calc(var(--gutter) * -1) 6px; padding: 4px var(--gutter) 8px; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.filter {
+  flex: none;
+  font: 700 13px/1 var(--font-body);
+  padding: 8px 10px;
+  border-radius: 3px;
+  border: 2px solid var(--ink);
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+}
+.filter[aria-pressed="true"] { background: var(--ink); color: var(--white); }
+
+.slot { display: block; text-decoration: none; }
+
+/* 空の棚 */
+.empty-boards { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 8px; }
+.empty-boards span { aspect-ratio: 1; border-bottom: 5px solid var(--ink); }
+.empty p { margin: 16px 0 12px; font-size: 15px; }
+.empty .btn { width: 100%; }

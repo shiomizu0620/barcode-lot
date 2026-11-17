@@ -1,0 +1,111 @@
+/* 「値札」：キャラが値札の上に立つ。変身は、このアプリで大きく動く唯一の場面。 */
+
+.morph {
+  width: min(100%, 340px);
+  aspect-ratio: 1;
+  margin: -6px auto -34px;
+  position: relative;
+  z-index: 2;
+}
+.morph svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+.tag {
+  position: relative;
+  background: var(--pop);
+  border: var(--line) solid var(--ink);
+  border-radius: var(--radius-card);
+  padding: 44px 22px 20px;
+  transition: translate .5s cubic-bezier(.2, .9, .3, 1.2), opacity .3s;
+}
+/* 変身のあいだは、値札とその下を隠す */
+body.morphing .tag { translate: 0 40px; opacity: 0; }
+body.morphing .arrival,
+body.morphing .result-actions,
+body.morphing .back { visibility: hidden; }
+
+.tag-hole {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--paper);
+  border: var(--line) solid var(--ink);
+}
+.tag-status {
+  position: absolute;
+  top: -16px;
+  right: 14px;
+  margin: 0;
+  max-width: 70%;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  background: var(--white);
+  border: 2.5px solid var(--ink);
+  border-radius: 3px;
+  rotate: 2deg;
+  z-index: 3;
+}
+.tag-status[data-new="true"] { background: var(--sale); color: var(--white); }
+
+.tag-head { display: flex; gap: 8px; align-items: center; }
+.tag-head .taste { font-size: 14px; }
+.tag-head .taste i { width: 13px; height: 13px; }
+.tag-kind { font-size: 13px; font-weight: 700; padding-left: 8px; border-left: 2px solid var(--ink); line-height: 1.2; }
+.tag-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(38px, 12vw, 52px);
+  line-height: 1.1;
+  margin: 8px 0 4px;
+  letter-spacing: .03em;
+}
+.tag-flavor, .tag-move, .tag-ring { margin: 0; font-size: 14px; }
+.tag-ring { margin-bottom: 14px; }
+
+.tag-stats {
+  margin: 0;
+  padding: 10px 0 12px;
+  border-top: 2px dashed var(--ink);
+  border-bottom: 2px dashed var(--ink);
+}
+.stat { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 8px; }
+.stat dt { font-weight: 700; font-size: 15px; white-space: nowrap; }
+.stat dt small { margin-left: 6px; font-size: 11px; font-weight: 500; }
+.leader { border-bottom: 2px dotted rgba(29, 29, 34, .45); translate: 0 -.3em; }
+.stat dd { margin: 0; display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+.stat .v { font-family: var(--font-display); font-size: 22px; line-height: 1.3; min-width: 1.6em; text-align: right; }
+.stat .d { font-size: 12px; min-width: 6.2em; text-align: right; }
+.stat .d[data-sign="1"] { color: #0c6b3a; font-weight: 700; }
+.stat .d[data-sign="-1"] { color: #a32117; font-weight: 700; }
+
+.tag-foot { margin-top: 12px; display: grid; gap: 4px; }
+.tag-code { display: flex; align-items: flex-end; gap: 10px; }
+.mini-code { width: 120px; height: 32px; fill: var(--ink); flex: none; }
+.digits { font: 500 15px/1 var(--font-digits); letter-spacing: .12em; }
+.tag-lot { margin: 0; font-size: 13px; font-weight: 700; }
+/* 手入力で生んだ子の印。感熱ラベルの点線で、読んだ子と見分ける */
+.typed-mark { display: inline-block; margin-left: 8px; padding: 1px 6px; font-size: 11px; border: 1.5px dashed var(--ink); border-radius: 2px; vertical-align: 1px; }
+
+/* 入荷の案内と、同じ品番のロットの切り替え */
+.arrival { margin-top: 16px; padding: 0 2px; }
+.arrival-label { margin: 0 0 6px; font-size: 13px; font-weight: 700; }
+.lot-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.lot-list .chip { font-size: 13px; padding: 8px 10px; }
+.arrival-next { margin: 0; font-size: 14px; }
+.arrival-next[data-arrived="true"] b { color: var(--sale); }
+
+.result-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tag { transition: none; }
+}

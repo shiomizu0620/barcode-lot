@@ -1,0 +1,300 @@
+/* 「バトル」：入口、チーム選び、試合、結果のレシート。 */
+
+/* ---- 入口：今日の挑戦者はチラシ、届いた挑戦状は果たし状 ---- */
+.flyer { margin-top: 18px; border: var(--line) solid var(--ink); background: var(--pop); }
+.flyer-head {
+  position: relative;
+  padding: 9px 14px 10px;
+  background: var(--sale);
+  color: var(--white);
+  border-bottom: var(--line) solid var(--ink);
+}
+.flyer-head h2 { margin: 0; font: 400 26px/1.2 var(--font-display); letter-spacing: .02em; }
+/* 「◯/◯限り」の丸い札。帯からはみ出して斜めに貼ってある */
+.flyer-date {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 2;
+  margin: 0;
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--ink);
+  border: var(--line) solid var(--ink);
+  font: 700 11px/1.2 var(--font-body);
+  rotate: 9deg;
+}
+.flyer-date b { display: block; font: 400 18px/1.1 var(--font-display); color: var(--sale); }
+.flyer-body { position: relative; padding: 6px 14px 14px; }
+.flyer-body .btn, .letter-body .btn { width: 100%; }
+.flyer .foe-stage { margin-bottom: 14px; }
+.flyer-body > .stamp, .letter-body > .stamp { position: absolute; z-index: 2; left: 8px; top: -12px; font-size: 17px; }
+
+.letter { margin-top: 18px; display: grid; grid-template-columns: auto 1fr; border: var(--line) solid var(--ink); background: var(--white); }
+.letter-spine {
+  margin: 0;
+  padding: 14px 9px;
+  writing-mode: vertical-rl;
+  font: 400 24px/1 var(--font-display);
+  letter-spacing: .28em;
+  background: var(--ink);
+  color: var(--white);
+}
+.letter-body { position: relative; padding: 4px 12px 12px; min-width: 0; }
+.letter .foe-stage { margin-bottom: 12px; }
+.letter-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+
+.hub-send { width: 100%; margin-top: 14px; }
+
+/* 味の輪：レシートの下のほうに刷ってある注意書きのように */
+.aisho { margin-top: 22px; padding: 12px 0; border-top: 2px dashed var(--rule); border-bottom: 2px dashed var(--rule); }
+.aisho h2 { margin: 0 0 8px; font: 700 13px/1 var(--font-body); }
+.aisho p:not(.chain) { margin: 8px 0 0; font-size: 12px; color: var(--ink-soft); }
+
+/* ---- チーム選び ---- */
+.team-label { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin: 16px 0 0; font-size: 13px; font-weight: 700; }
+.team-legend { font-weight: 500; font-size: 12px; margin-left: auto; }
+.edge {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  font: 700 12px/1 var(--font-body);
+  font-style: normal;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--white);
+  vertical-align: -4px;
+  margin-right: 2px;
+}
+.edge[data-kind="strong"] { background: var(--sale); color: var(--white); }
+
+.team .aisho { margin-top: 18px; }
+.pick {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--ink);
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+/* えらぶと、マスと値札が黄色になり、順番の丸い札が貼られる */
+.pick[aria-pressed="true"] .thumb, .pick[aria-pressed="true"] .shelf-tag { background-color: var(--pop); }
+.pick-no {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--sale);
+  color: var(--white);
+  font: 400 15px/1 var(--font-display);
+  border: 2.5px solid var(--ink);
+  rotate: -8deg;
+}
+.pick-marks { position: absolute; top: 5px; right: 3px; display: flex; }
+
+/* えらんだ順番と決定ボタン。画面の下に張りつく */
+.team-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin: 18px calc(var(--gutter) * -1) -40px;
+  padding: 10px var(--gutter) calc(14px + env(safe-area-inset-bottom));
+  background: var(--paper);
+  border-top: var(--line) solid var(--ink);
+}
+.team-combos { margin: 0 0 8px; font-weight: 700; font-size: 13px; line-height: 1.5; }
+.team-combos:empty { display: none; }
+.team-bar-row { display: flex; align-items: center; gap: 10px; }
+.team-slots { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; flex: none; }
+.team-slots li {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--rule);
+  font: 400 15px/1 var(--font-display);
+  color: var(--rule);
+}
+.team-slots li[data-filled="true"] { border: 2.5px solid var(--ink); background: var(--pop); }
+.team-slots svg { width: 100%; height: 100%; display: block; }
+.team-bar .btn { flex: 1; min-width: 0; padding: 0 10px; }
+.team-msg { margin: 8px 0 0; font-size: 13px; word-break: break-all; }
+.team-msg:empty { display: none; }
+
+/* ---- 試合 ---- */
+.battle { padding-top: 14px; }
+.battle-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.battle-title { margin: 0; font: 400 18px/1.3 var(--font-display); }
+.battle-round { margin: 0 auto 0 0; font: 500 13px/1 var(--font-digits); color: var(--ink-soft); }
+.side-label { margin: 2px 0; font-size: 12px; font-weight: 700; color: var(--ink-soft); text-align: center; }
+
+.fighters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.fighter { position: relative; text-align: center; transition: opacity .4s, filter .4s; }
+.fighter-art { width: 100%; aspect-ratio: 1; }
+.fighter-art svg { width: 100%; height: 100%; display: block; }
+.fighter-name { font-weight: 700; font-size: 13px; line-height: 1.3; margin-bottom: 2px; }
+.fighter .taste { font-size: 11px; }
+.gauge {
+  height: 12px;
+  margin: 5px 6px 0;
+  border: 2.5px solid var(--ink);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--white);
+}
+.gauge span { display: block; height: 100%; background: var(--pop); transition: width .35s ease-out; }
+.gauge-text { font-size: 11px; color: #3b3f45; }
+.fighter.boosted .fighter-name::after { content: "↑"; color: var(--sale); margin-left: 2px; }
+.row-mine .fighter.act { animation: hop-up .45s ease-out; }
+.row-foe .fighter.act { animation: hop-down .45s ease-out; }
+.fighter.hurt .fighter-art { animation: shake .35s linear; }
+.fighter.down { opacity: .35; filter: grayscale(1); }
+.fighter.down .fighter-art { transform: rotate(-12deg) translateY(8px); transition: transform .4s; }
+@keyframes hop-up { 40% { transform: translateY(-22px); } }
+@keyframes hop-down { 40% { transform: translateY(22px); } }
+@keyframes shake { 20% { translate: -5px 0; } 40% { translate: 5px 0; } 60% { translate: -3px 0; } 80% { translate: 3px 0; } }
+.dmg {
+  position: absolute;
+  left: 50%;
+  top: 28%;
+  translate: -50% 0;
+  pointer-events: none;
+  font: 400 20px/1 var(--font-display);
+  color: var(--sale);
+  -webkit-text-stroke: 1px var(--white);
+  animation: rise .9s ease-out forwards;
+}
+.dmg[data-match="strong"] { font-size: 26px; }
+.dmg[data-match="weak"] { color: #5a5f66; font-size: 16px; }
+@keyframes rise { to { transform: translateY(-34px); opacity: 0; } }
+
+.battle-log {
+  margin: 10px 0;
+  padding: 10px 14px;
+  min-height: 112px;
+  background: var(--white);
+  border-top: 2px dashed var(--rule);
+  border-bottom: 2px dashed var(--rule);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.battle-log p { margin: 0 0 4px; color: #6b7076; }
+.battle-log p:first-child { color: var(--ink); font-weight: 700; }
+.battle-log p[data-tone="strong"]:first-child { color: var(--sale); }
+.battle-log p[data-tone="combo"]:first-child { background: var(--pop); padding: 0 4px; border-radius: 4px; }
+
+/* ---- 手を出せる試合 ---- */
+/* 画面の高さいっぱいに使い、自分の列と操作は親指の届く下側に置く */
+.live { padding-top: 14px; --art: min(100%, 15.5vh); display: flex; flex-direction: column; min-height: calc(100dvh - 96px); }
+.live .dmg { font-size: 15px; top: 6%; }
+.live .dmg[data-match="strong"] { font-size: 26px; }
+.live .dmg[data-match="weak"] { font-size: 13px; }
+.live-clock { margin: 0 0 0 auto; font: 500 20px/1 var(--font-digits); letter-spacing: .04em; }
+.live-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; align-items: start; }
+.lf { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; transition: opacity .3s, filter .3s; }
+/* 先頭は相手のほうへ一歩出て大きく、控えは下がって小さく */
+.lf-art { position: relative; width: var(--art); aspect-ratio: 1; scale: .8; transition: scale .18s ease-out, translate .18s ease-out; }
+.lf-art svg { width: 100%; height: 100%; display: block; }
+.lf.is-front .lf-art { scale: 1; }
+.live-row[data-side="1"] { padding-bottom: 10px; }
+.live-row[data-side="1"] .lf.is-front .lf-art { translate: 0 8px; }
+.live-row[data-side="0"] { padding-top: 10px; }
+.live-row[data-side="0"] .lf.is-front .lf-art { translate: 0 -8px; }
+.lf-art .edge { position: absolute; top: 4px; right: 0; margin: 0; }
+.lf-name { font: 700 12px/1.3 var(--font-body); }
+.lf .taste { font-size: 11px; }
+.lf .gauge { width: calc(100% - 8px); margin: 2px 0 0; }
+.lf.down { opacity: .35; filter: grayscale(1); }
+.live-row[data-side="0"] .lf.act .lf-art { animation: hop-up .3s ease-out; }
+.live-row[data-side="1"] .lf.act .lf-art { animation: hop-down .3s ease-out; }
+.lf.hurt .lf-art svg { animation: shake .3s linear; }
+
+/* 相手の技のゲージ（たまり具合だけ見える） */
+.lf-charge { width: calc(100% - 8px); height: 5px; background: var(--paper-2); }
+.lf-charge span { display: block; height: 100%; width: 0; background: var(--sale); }
+
+/* 「前へ」：入れ替えた直後は、待ち時間のぶんだけ左から塞がる */
+.lf-front { position: relative; width: 100%; margin-top: 4px; overflow: hidden; }
+.lf-front::after { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--wait, 0) * 100%); background: rgba(29, 29, 34, .28); }
+/* 技：ゲージが左からたまり、満タンで赤くなる */
+.lf-move {
+  position: relative;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 4px;
+  overflow: hidden;
+  font: inherit;
+  color: var(--ink-soft);
+  background: var(--white);
+  border: var(--line) solid var(--rule);
+  border-bottom-width: var(--key-depth);
+  border-radius: var(--radius);
+}
+.lf-move-fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--pop); }
+.lf-move b { position: relative; font: 700 11px/1.15 var(--font-body); }
+@media (max-width: 359px) {
+  .lf-move b { font-size: 10px; letter-spacing: -.03em; }
+}
+.lf-move.is-ready { border-color: var(--ink); color: var(--white); cursor: pointer; }
+.lf-move.is-ready .lf-move-fill { background: var(--sale); }
+.lf-move.is-ready:active { border-bottom-width: var(--line); translate: 0 3px; }
+
+.live-log { margin: auto 0; min-height: 3.1em; padding: 6px 10px; display: grid; align-content: center; background: var(--white); border-top: 2px dashed var(--rule); border-bottom: 2px dashed var(--rule); font-size: 13px; font-weight: 700; line-height: 1.45; }
+.live-log[data-tone="mine"] { color: var(--sale); }
+.live-log[data-tone="combo"] { background: var(--pop); }
+
+/* ---- 結果：レジから出てくるレシート。画面の下に張りつく ---- */
+body.battle-done main { padding-bottom: 0; }
+.receipt {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin: 16px -6px 0;
+  /* 紙の形（ギザギザ込み）に沿って、太い輪郭線を付ける */
+  filter: drop-shadow(0 -3px 0 var(--ink)) drop-shadow(3px 0 0 var(--ink)) drop-shadow(-3px 0 0 var(--ink));
+  animation: print .45s cubic-bezier(.2, .9, .3, 1);
+}
+.receipt-paper {
+  --tooth: 10px;
+  padding: calc(var(--tooth) + 14px) 18px calc(16px + env(safe-area-inset-bottom));
+  background: var(--white);
+  text-align: center;
+  /* 上の辺を、ちぎったレシートのギザギザにする */
+  -webkit-mask:
+    conic-gradient(from 135deg at 50% 0, #000 90deg, #0000 0) 0 0 / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) 0 var(--tooth) / 100% calc(100% - var(--tooth)) no-repeat;
+  mask:
+    conic-gradient(from 135deg at 50% 0, #000 90deg, #0000 0) 0 0 / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) 0 var(--tooth) / 100% calc(100% - var(--tooth)) no-repeat;
+}
+@keyframes print { from { translate: 0 60%; } }
+.receipt-title { font: 400 40px/1.1 var(--font-display); margin: 0; }
+.receipt[data-win="0"] .receipt-title { color: var(--sale); }
+.receipt-sub { margin: 6px 0 10px; font-size: 14px; }
+.receipt-lines { margin: 0 0 14px; padding: 8px 0; border-top: 2px dashed var(--rule); border-bottom: 2px dashed var(--rule); font-size: 14px; }
+.receipt-lines div { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 8px; }
+.receipt-lines dt { font-weight: 700; }
+.receipt-lines dd { margin: 0; font: 500 15px/1.6 var(--font-digits); }
+.receipt-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.receipt-actions .btn { padding: 0 8px; font-size: 14px; }
+.receipt-actions .btn.primary { grid-column: 1 / -1; font-size: 16px; }
+.receipt-msg { margin: 8px 0 0; font-size: 13px; word-break: break-all; }
+.receipt-msg:empty { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fighter.act, .fighter.hurt .fighter-art, .dmg, .receipt, .lf.act .lf-art, .lf.hurt .lf-art svg { animation: none; }
+  .lf-art { transition: none; }
+}
