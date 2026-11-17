@@ -2,10 +2,11 @@
 // 同じチーム・同じ種・同じ操作の列なら、必ず同じ試合になる。
 // 画面にも通信にも触れないので、あとで対戦用のサーバーでもそのまま動かせる。
 //
-// 決まり：
-// - 3体とも自分の間隔（キレが高いほど短い）で攻撃する。当たるのは相手の「先頭」
+// 決まり（くわしくは docs/battle-plan.md）：
+// - 3体とも自分の間隔（キレが高いほど短い）で攻撃する。攻撃の前に「ため」（0.4秒）があり、画面に見える
+// - 当たるのは、ためが終わった瞬間の相手の「先頭」。ためを見てから入れ替えれば、相性のいい体で受けられる
 // - 先頭は入れ替えられる（入れ替えたあと少しの間は替えられない）。控えは少しずつ回復する
-// - 攻撃したり受けたりすると技のゲージがたまり、満タンなら好きな時に技を出せる
+// - 攻撃したり受けたりすると技のゲージがたまり、満タンなら好きな時に技を出せる。放っておくと少しして勝手に出る
 
 import { lineUp, matchup, RING_REASON, type BattleEvent, type Fighter, type Member } from "./battle";
 import { Rng } from "./rng";
@@ -26,14 +27,23 @@ export const LIVE = {
   gaugeOnAttack: 11,
   gaugeOnHit: 5,
   moveMult: 3, // 技の威力（ふつうの攻撃の何倍か）
+  autoMove: 50, // 技のゲージが満タンのまま放っておくと、これだけたって勝手に出る（5秒）
+  windup: 4, // 攻撃の前の「ため」（0.4秒）
+  // CPU（今日の挑戦者）のくせ。強すぎると、何もしない人がまったく勝てなくなる
+  cpuFire: [35, 60] as const, // 技が満タンになってから出すまで（コマ）
+  cpuLook: [150, 250] as const, // 入れ替えを考えなおす間隔（コマ）
+  cpuSwapMargin: 0.55, // 今の先頭より、これだけ良い体がいたら入れ替える
+  // 2026-11-17 の目安（npm run balance）：何もしない人 41%・技だけ押す人 54%・ためを全部見て受ける人 95%（1000試合）
   regenEvery: 10, // 控えの回復の間隔（1秒）
   regenRate: 0.012, // 1回で、満タンの量の1.2%
 };
 
 export interface LiveFighter extends Fighter {
   interval: number; // 攻撃の間隔（コマ）
-  wait: number; // 次の攻撃までの残り（コマ）
+  wait: number; // 次の「ため」に入るまでの残り（コマ）
+  windup: number; // ための残り（コマ）。0 ならためていない
   gauge: number; // 技のゲージ（0〜gaugeMax）
+  fullAt: number | null; // 技のゲージが満タンになったコマ
 }
 
 /** CPUの考えごと（技を出すまでの間、次に入れ替えを考える時刻）。 */
@@ -59,6 +69,7 @@ export type LiveInput =
   | { side: 0 | 1; t: "move"; slot: number }; // この体の技を出す
 
 export type LiveEvent =
+  | { t: "windup"; side: 0 | 1; slot: number; target: number } // ために入った（target は今の相手の先頭。当たるまでに変わりうる）
   | { t: "hit"; side: 0 | 1; slot: number; target: number; damage: number; hpAfter: number; match: "strong" | "weak" | "even"; move?: string; reason?: string }
   | { t: "front"; side: 0 | 1; slot: number; forced: boolean } // forced＝先頭が倒れて繰り上がった
   | { t: "ready"; side: 0 | 1; slot: number } // 技のゲージが満タンになった
@@ -75,7 +86,7 @@ export function createLive(teamA: Member[], teamB: Member[], seed: string, cpu: 
   const live = fighters.map((team) =>
     team.map((f): LiveFighter => {
       const interval = Math.max(8, Math.round(LIVE.intervalBase - f.spd * LIVE.intervalPerKire));
-      return { ...f, interval, wait: 6 + rng.int(0, interval), gauge: 0 }; // 出だしをばらけさせる
+      return { ...f, interval, wait: 6 + rng.int(0, interval), windup: 0, gauge: 0, fullAt: null }; // 出だしをばらけさせる
     }),
   );
   const mind = (side: 0 | 1): CpuMind | null => (cpu[side] ? { fireAt: live[side].map(() => null), nextLook: 10 } : null);
@@ -98,7 +109,10 @@ export function stepLive(state: LiveState, inputs: LiveInput[] = []): LiveEvent[
   const addGauge = (f: LiveFighter, n: number) => {
     const was = f.gauge;
     f.gauge = Math.min(LIVE.gaugeMax, f.gauge + n);
-    if (was < LIVE.gaugeMax && f.gauge >= LIVE.gaugeMax) events.push({ t: "ready", side: f.side, slot: f.slot });
+    if (was < LIVE.gaugeMax && f.gauge >= LIVE.gaugeMax) {
+      f.fullAt = state.tick;
+      events.push({ t: "ready", side: f.side, slot: f.slot });
+    }
   };
 
   const strike = (f: LiveFighter, move: boolean) => {
@@ -144,24 +158,43 @@ export function stepLive(state: LiveState, inputs: LiveInput[] = []): LiveEvent[
       events.push({ t: "front", side: input.side, slot: f.slot, forced: false });
     } else if (f.gauge >= LIVE.gaugeMax) {
       f.gauge = 0;
+      f.fullAt = null;
       strike(f, true);
     }
   }
 
-  // 2) ふつうの攻撃。同じコマに重なったら、キレの高い順
+  // 1') 満タンのまま放っておかれた技は、勝手に出る
+  for (const team of fighters) {
+    for (const f of team) {
+      if (state.winner !== null) break;
+      if (alive(f) && f.fullAt !== null && state.tick - f.fullAt >= LIVE.autoMove) {
+        f.gauge = 0;
+        f.fullAt = null;
+        strike(f, true);
+      }
+    }
+  }
+
+  // 2) ふつうの攻撃：ため → 当たる。同じコマに重なったら、キレの高い順
   for (const side of [0, 1] as const) if (state.swapWait[side] > 0) state.swapWait[side]--;
   const ready: { f: LiveFighter; k: number }[] = [];
   for (const team of fighters) {
     for (const f of team) {
-      if (!alive(f)) continue;
-      if (--f.wait <= 0) ready.push({ f, k: f.spd + rng.next() });
+      if (!alive(f) || state.winner !== null) continue;
+      if (f.windup > 0) {
+        if (--f.windup === 0) ready.push({ f, k: f.spd + rng.next() });
+      } else if (--f.wait <= 0) {
+        f.windup = LIVE.windup;
+        const foe = (1 - f.side) as 0 | 1;
+        events.push({ t: "windup", side: f.side, slot: f.slot, target: state.front[foe] });
+      }
     }
   }
   ready.sort((a, b) => b.k - a.k);
   for (const { f } of ready) {
     if (state.winner !== null) break;
     if (!alive(f)) continue;
-    f.wait = f.interval;
+    f.wait = Math.max(1, f.interval - LIVE.windup); // ためのぶんを引いて、攻撃の間隔は変えない
     strike(f, false);
   }
 
@@ -203,21 +236,21 @@ function think(state: LiveState, side: 0 | 1): LiveInput[] {
       mind.fireAt[f.slot] = null;
       continue;
     }
-    const at = (mind.fireAt[f.slot] ??= state.tick + state.rng.int(15, 45)); // 1.5〜4.5秒おいてから
+    const at = (mind.fireAt[f.slot] ??= state.tick + state.rng.int(LIVE.cpuFire[0], LIVE.cpuFire[1]));
     if (state.tick < at) continue;
     if (matchup(f.spec.taste, foeFront.spec.taste) !== "weak" || state.tick >= at + 25) out.push({ side, t: "move", slot: f.slot });
   }
 
   // 入れ替え：ときどき見直す。残りが多く、相手の味に強い体を先頭にする
   if (state.swapWait[side] === 0 && state.tick >= mind.nextLook) {
-    mind.nextLook = state.tick + state.rng.int(25, 45);
+    mind.nextLook = state.tick + state.rng.int(LIVE.cpuLook[0], LIVE.cpuLook[1]);
     const score = (f: LiveFighter) => {
       const incoming = foes.reduce((a, e) => a + mult(matchup(e.spec.taste, f.spec.taste)), 0) / foes.length;
       return f.hp / f.maxHp - 0.45 * incoming + (f.slot === state.front[side] ? 0.12 : 0);
     };
     const front = team[state.front[side]];
     const best = team.filter(alive).sort((a, b) => score(b) - score(a))[0];
-    if (best && alive(front) && best !== front && score(best) - score(front) > 0.32) out.push({ side, t: "front", slot: best.slot });
+    if (best && alive(front) && best !== front && score(best) - score(front) > LIVE.cpuSwapMargin) out.push({ side, t: "front", slot: best.slot });
   }
   return out;
 }

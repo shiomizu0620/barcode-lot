@@ -5,6 +5,7 @@ import { combosOf, matchup } from "../../core/battle";
 import { specFor } from "../../core/creature";
 import { allLots, lotNumber, type Lot } from "../../store/lots";
 import { dailyOpponent, keyOf, MAX_TEAM, memberOf, pendingLetter, pickedLots, sendLetter, setMatch, setPicked, type Mode, type Opponent } from "../battle-session";
+import { unlock } from "../../device/sfx";
 import { $, on } from "../dom";
 import { characterOfLot, characterSvg, foeStageHtml, TASTE_COLOR, tasteChainHtml, type Character } from "../parts";
 import { navigate, type View } from "../router";
@@ -105,6 +106,7 @@ export const battleTeamView: View = ({ root, params }) => {
   });
 
   go.addEventListener("click", async () => {
+    unlock(); // 試合の効果音は、この押した瞬間からでないと鳴らせない端末がある
     const team = picked.map((k) => memberOf(cast.get(k)!.lot));
     if (mode === "send") {
       $(".team-msg", root).textContent = await sendLetter(team);

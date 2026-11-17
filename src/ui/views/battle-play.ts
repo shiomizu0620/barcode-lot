@@ -2,8 +2,10 @@
 // 誰が開いても同じ試合になる。手を出せる試合は battle-live.ts。
 
 import { encodeTeam, simulate, TUNE, type BattleEvent, type Fighter } from "../../core/battle";
+import { sfx } from "../../device/sfx";
 import { recordDaily } from "../../store/daily";
 import { currentMatch, markLetterFought } from "../battle-session";
+import { shake } from "../battle-fx";
 import { $, reducedMotion } from "../dom";
 import { characterSvg, tasteChip } from "../parts";
 import { clearReceipt, receiptHtml, showReceipt } from "../receipt";
@@ -74,10 +76,15 @@ export const battlePlayView: View = ({ root }) => {
     });
     if (opponent.kind === "daily") recordDaily(opponent.date!, ev.winner === 0 ? "win" : ev.winner === 1 ? "lose" : "draw");
     else markLetterFought();
+    if (!skip) {
+      if (ev.winner === 0) sfx.win();
+      else if (ev.winner === 1) sfx.lose();
+    }
   }
 
   async function play() {
     line(`${opponent.title}とのバトル開始`);
+    if (!skip) sfx.start();
     await wait(700);
     for (const ev of res.events) {
       if (gone) return;
@@ -85,6 +92,7 @@ export const battlePlayView: View = ({ root }) => {
         case "combo":
           line(`${sideName(ev.side)}の組み合わせ技「${ev.name}」！ ${ev.slots.map((s) => names[ev.side][s]).join("と")}の濃さが上がった`, "combo");
           for (const s of ev.slots) fx(ev.side, s).classList.add("boosted");
+          if (!skip) sfx.combo();
           await wait(1100);
           break;
         case "trio":
@@ -104,6 +112,10 @@ export const battlePlayView: View = ({ root }) => {
           t.classList.remove("hurt");
           void t.offsetWidth;
           t.classList.add("hurt");
+          if (!skip) {
+            sfx.hit(ev.match);
+            if (ev.match === "strong") shake($(".battle", root), 6, 220);
+          }
           hp[1 - ev.side][ev.target] = ev.hpAfter;
           $(".gauge span", t).style.width = `${(ev.hpAfter / maxHp[1 - ev.side][ev.target]) * 100}%`;
           $(".gauge", t).setAttribute("aria-valuenow", String(ev.hpAfter));
@@ -123,6 +135,7 @@ export const battlePlayView: View = ({ root }) => {
         }
         case "down":
           fx(ev.side, ev.slot).classList.add("down");
+          if (!skip) sfx.down();
           line(`${names[ev.side][ev.slot]}は飲み干された……`, "down");
           await wait(700);
           break;

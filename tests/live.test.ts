@@ -62,6 +62,31 @@ describe("手を出せるバトル", () => {
     expect(f.gauge).toBeLessThan(LIVE.gaugeMax);
   });
 
+  it("攻撃の前に「ため」があり、当たるのは、ためが終わったときの先頭", () => {
+    const state = createLive(team("a"), team("b"), "s", [false, false]);
+    // あいての誰かが、ために入るまで進める
+    let windup: LiveEvent | undefined;
+    for (let i = 0; i < 100 && !windup; i++) windup = stepLive(state).find((e) => e.t === "windup" && e.side === 1);
+    expect(windup).toBeDefined();
+    if (windup?.t !== "windup") return;
+    expect(windup.target).toBe(0);
+    // ためている間に先頭を入れ替える → 命中するのは新しい先頭
+    stepLive(state, [{ side: 0, t: "front", slot: 2 }]);
+    let hit: LiveEvent | undefined;
+    for (let i = 0; i < LIVE.windup + 1 && !hit; i++) hit = stepLive(state).find((e) => e.t === "hit" && e.side === 1 && e.slot === windup.slot);
+    expect(hit && hit.t === "hit" && hit.target).toBe(2);
+  });
+
+  it("技は、満タンのまま放っておくと少しして勝手に出る", () => {
+    const state = createLive(team("a"), team("b"), "s", [false, false]);
+    const f = state.fighters[0][0];
+    while (f.gauge < LIVE.gaugeMax) stepLive(state);
+    let fired = false;
+    for (let i = 0; i < LIVE.autoMove + 1 && !fired; i++) fired = stepLive(state).some((e) => e.t === "hit" && e.side === 0 && e.slot === 0 && !!e.move);
+    expect(fired).toBe(true);
+    expect(f.gauge).toBeLessThan(LIVE.gaugeMax);
+  });
+
   it("控えにいる間は、少しずつ回復する", () => {
     const state = createLive(team("a"), team("b"), "s", [false, false]);
     const back = state.fighters[0][1];

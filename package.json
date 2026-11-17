@@ -7,6 +7,8 @@
     "preview": "vite preview --host",
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p . && tsc --noEmit -p worker",
+    "check": "npm run typecheck && vitest run && vite build",
+    "balance": "vite-node scripts/balance.ts",
     "golden": "vite-node scripts/golden.ts"
   },
   "devDependencies": {
