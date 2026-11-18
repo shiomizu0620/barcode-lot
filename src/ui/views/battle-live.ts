@@ -12,6 +12,8 @@ import { $ } from "../dom";
 import { characterSvg, tasteChip } from "../parts";
 import { clearReceipt, receiptHtml, showReceipt } from "../receipt";
 import { navigate, type View } from "../router";
+import { canUse3d, setWant3d, want3d } from "../stage-pref";
+import type { Stage } from "../stage3d";
 
 const ME = 0, FOE = 1;
 const START_DELAY = 1400; // 並びを見てから始まるまで
@@ -44,19 +46,25 @@ export const battleLiveView: View = ({ root }) => {
   }
   const { mode, opponent, team } = match;
   const state = createLive(team, opponent.members, `${opponent.code}:${encodeTeam(team)}`, [false, true]);
+  const use3d = want3d() && canUse3d();
 
   root.innerHTML = `
-    <section class="live" aria-label="バトル">
+    <section class="live${use3d ? " is-3d" : ""}" aria-label="バトル">
       <div class="battle-top">
         <p class="battle-title">${opponent.title}</p>
-        <button type="button" class="sound" aria-pressed="${!isMuted()}">${isMuted() ? "音なし" : "音あり"}</button>
+        <button type="button" class="sound stage-toggle">${use3d ? "2Dで見る" : "3Dで見る"}</button>
+        <button type="button" class="sound" data-sound aria-pressed="${!isMuted()}">${isMuted() ? "音なし" : "音あり"}</button>
         <p class="live-clock" aria-label="のこり時間">${clock(LIVE.timeLimit)}</p>
       </div>
       <div class="arena">
         <div class="live-row" data-side="${FOE}">${state.fighters[FOE].map(fighterHtml).join("")}</div>
-        <div class="arena-mid"></div>
+        ${
+          use3d
+            ? `<div class="stage3d"><div class="arena-mid"></div><div class="fx" aria-hidden="true"></div></div>`
+            : `<div class="arena-mid"></div>`
+        }
         <div class="live-row" data-side="${ME}">${state.fighters[ME].map(fighterHtml).join("")}</div>
-        <div class="fx" aria-hidden="true"></div>
+        ${use3d ? "" : `<div class="fx" aria-hidden="true"></div>`}
       </div>
       <p class="live-log visually-hidden" aria-live="polite"></p>
       ${receiptHtml()}
@@ -88,7 +96,7 @@ export const battleLiveView: View = ({ root }) => {
   const colors = state.fighters.map((t) => t.map((f) => f.spec.palette.body));
   const say = (text: string) => (log.textContent = text); // 画面を読み上げる人向け
 
-  const soundBtn = $<HTMLButtonElement>(".sound", root);
+  const soundBtn = $<HTMLButtonElement>("[data-sound]", root);
   soundBtn.addEventListener("click", () => {
     setMuted(!isMuted());
     unlock();
@@ -96,8 +104,28 @@ export const battleLiveView: View = ({ root }) => {
     soundBtn.textContent = isMuted() ? "音なし" : "音あり";
   });
 
+  // ---- 3Dの舞台（お試し）。読み込めなければ2Dに戻す ----
+  let stage: Stage | null = null;
+  $(".stage-toggle", root).addEventListener("click", () => {
+    setWant3d(!use3d);
+    location.reload(); // 試合の途中でも最初から（お試しの見比べ用）
+  });
+  if (use3d) {
+    import("../stage3d")
+      .then((m) => m.createStage($(".stage3d", root), state.fighters, state.front))
+      .then((s) => {
+        if (gone) s.dispose();
+        else stage = s;
+      })
+      .catch(() => {
+        // WebGLが動かない端末：絵を出して2Dのまま続ける
+        root.querySelector(".live")?.classList.remove("is-3d");
+      });
+  }
+
   /** 先頭を真ん中に置く。入れ替わるときはすべるように動かす。 */
   function arrange(side: 0 | 1, animate: boolean) {
+    stage?.arrange(side, state.front[side], animate);
     const els = cells[side].map((c) => c.el);
     const before = els.map((el) => el.getBoundingClientRect());
     const front = state.front[side];
@@ -160,6 +188,11 @@ export const battleLiveView: View = ({ root }) => {
     for (const ev of events) {
       switch (ev.t) {
         case "windup": {
+          if (stage) {
+            stage.windup(ev.side, ev.slot, ev.target);
+            if (ev.side === FOE) sfx.windup();
+            break;
+          }
           // ため：体を引く（0.4秒）。相手のためは赤い「！」でわかる（draw で付く）
           const { ux, uy } = aim(ev.side, ev.slot, ev.target);
           void play(cells[ev.side][ev.slot].body, [{ transform: "none" }, { transform: `translate(${-ux * 9}px,${-uy * 9}px) scale(.94,1.06)` }], LIVE.windup * LIVE.tickMs, { fill: "forwards", easing: "ease-in" });
@@ -168,6 +201,18 @@ export const battleLiveView: View = ({ root }) => {
         }
         case "hit": {
           const power = ev.move ? "move" : ev.match;
+          if (stage) {
+            stage.hit(ev.side, ev.slot, ev.target, power, colors[ev.side][ev.slot], (x, y) => damagePop(fxLayer, x, y - 18, ev.damage, power));
+            if (ev.move) {
+              sfx.move();
+              callout(mid, `${names[ev.side][ev.slot]}の「${ev.move}」`, ev.match === "strong" ? "よく効く！" : ev.match === "weak" ? "あまり効いていない" : "", ev.match === "strong" ? "strong" : ev.match === "weak" ? "weak" : "", ev.side);
+              say(`${names[ev.side][ev.slot]}の「${ev.move}」！${ev.match === "strong" ? ` ${ev.reason}` : ""}`);
+            } else {
+              sfx.dash();
+              sfx.hit(ev.match);
+            }
+            break;
+          }
           const { ux, uy, len, at } = aim(ev.side, ev.slot, ev.target);
           const reach = Math.min(len * 0.5, ev.move ? 70 : 46);
           const attacker = cells[ev.side][ev.slot], target = cells[1 - ev.side][ev.target];
@@ -208,6 +253,10 @@ export const battleLiveView: View = ({ root }) => {
           sfx.down();
           callout(mid, `${names[ev.side][ev.slot]}は飲み干された……`, "", "down");
           say(`${names[ev.side][ev.slot]}は飲み干された`);
+          if (stage) {
+            stage.down(ev.side, ev.slot);
+            break;
+          }
           const up = ev.side === FOE ? -1 : 1;
           void play(cells[ev.side][ev.slot].body, [
             { transform: "none" },
@@ -232,7 +281,8 @@ export const battleLiveView: View = ({ root }) => {
     else markLetterFought();
     if (ev.winner === ME) sfx.win();
     else if (ev.winner === FOE) sfx.lose();
-    if (ev.winner !== -1) {
+    if (ev.winner !== -1) stage?.cheer(ev.winner);
+    if (ev.winner !== -1 && !stage) {
       state.fighters[ev.winner].forEach((f, i) => {
         if (f.hp > 0) void play(cells[ev.winner as 0 | 1][i].body, [{ transform: "none" }, { transform: "translateY(-18px)", offset: 0.3 }, { transform: "none", offset: 0.6 }, { transform: "translateY(-8px)", offset: 0.8 }, { transform: "none" }], 700, { delay: i * 90 });
       });
@@ -311,6 +361,7 @@ export const battleLiveView: View = ({ root }) => {
   return () => {
     gone = true;
     stop();
+    stage?.dispose();
     clearReceipt();
   };
 };

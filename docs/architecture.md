@@ -88,6 +88,7 @@ scripts/balance.ts    手を出せる試合の釣り合いを測る（npm run ba
 | `barcode-lot:profiles:v1` | localStorage | `{ 品番: { flavor?, source } }` |
 | `barcode-lot:daily:v1` | localStorage | `{ date, result }`（今日の挑戦者との結果） |
 | `barcode-lot:debug-offset` | localStorage | 試作用にすすめた時間（ミリ秒） |
+| `barcode-lot:stage` | localStorage | バトルを3Dで見るか（`3d` / `2d`。無ければ3D）。お試し |
 | `barcode-lot:letter` `…:letter-done` | sessionStorage | 届いた挑戦状と、もう戦ったか |
 | `barcode-lot:debug` | sessionStorage | 試作用の操作を出すか |
 | `sfx` | localStorage | 効果音を消したか（`off` / `on`） |

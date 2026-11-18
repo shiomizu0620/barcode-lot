@@ -20,7 +20,9 @@
     "wrangler": "^4.160.1"
   },
   "dependencies": {
-    "barcode-detector": "^3.2.3"
+    "@types/three": "^0.187.0",
+    "barcode-detector": "^3.2.3",
+    "three": "^0.187.0"
   },
   "private": true,
   "type": "module"
