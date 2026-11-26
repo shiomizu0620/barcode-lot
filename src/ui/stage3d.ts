@@ -5,18 +5,24 @@
 
 import {
   BoxGeometry,
+  BufferAttribute,
+  type BufferGeometry,
   CanvasTexture,
+  Color,
   CircleGeometry,
   DirectionalLight,
   EdgesGeometry,
   Fog,
   Group,
   HemisphereLight,
+  InstancedMesh,
   LineBasicMaterial,
   LineSegments,
   Mesh,
   MeshBasicMaterial,
   MeshLambertMaterial,
+  Matrix4,
+  Object3D,
   PerspectiveCamera,
   PlaneGeometry,
   RepeatWrapping,
@@ -27,6 +33,7 @@ import {
   WebGLRenderer,
   type Material,
 } from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { LiveFighter } from "../core/live";
 import { GROUND, VIEW } from "../art/render";
 import { reducedMotion } from "./dom";
@@ -41,10 +48,11 @@ type Power = "strong" | "weak" | "even" | "move";
 
 // ---- 置き場所（0＝こちら＝手前、1＝あいて＝奥） ----
 const SPOTS: Record<0 | 1, { front: Vector3; left: Vector3; right: Vector3 }> = {
-  0: { front: new Vector3(0, 0, 1.9), left: new Vector3(-1.2, 0, 2.95), right: new Vector3(1.2, 0, 2.95) },
+  0: { front: new Vector3(0, 0, 1.9), left: new Vector3(-1.1, 0, 2.5), right: new Vector3(1.1, 0, 2.5) },
   1: { front: new Vector3(0, 0, -1.5), left: new Vector3(-1.75, 0, -2.75), right: new Vector3(1.75, 0, -2.75) },
 };
 const ART = 1.75; // 絵の板の大きさ（余白込み）
+const SUPPORT = 0.84; // こちらの後ろの2体の大きさ。カメラに近いぶん大きく見えて、先頭を隠してしまうので少し小さくする
 const TEX = 512;
 const MARGIN = 30; // シールのふち用の余白（テクスチャのpx）
 
@@ -98,13 +106,36 @@ function canvasTexture(w: number, h: number, draw: (g: CanvasRenderingContext2D)
   return t;
 }
 
-/** 黒いふちのついた箱（売り場の棚や商品）。 */
-function inkedBox(w: number, h: number, d: number, color: string, edge = INK): Group {
-  const geo = new BoxGeometry(w, h, d);
-  const g = new Group();
-  g.add(new Mesh(geo, new MeshLambertMaterial({ color })));
-  g.add(new LineSegments(new EdgesGeometry(geo), new LineBasicMaterial({ color: edge })));
-  return g;
+/**
+ * 動かない売り場（棚・商品の箱）をまとめて描くための入れ物。
+ * 箱を1つずつ別の部品にすると、棚5台で200回以上描くことになり、安いスマホで重い。
+ * 面は色つきの1つの形に、黒いふちは1本の線にまとめて、2回で描く。
+ */
+class StaticBatch {
+  private solids: BufferGeometry[] = [];
+  private edges: BufferGeometry[] = [];
+  private tmp = new Color();
+  /** 黒いふちのついた箱を足す。m は置き場所（棚の位置と向き）。 */
+  box(m: Matrix4, w: number, h: number, d: number, x: number, y: number, z: number, color: string) {
+    const at = new Matrix4().makeTranslation(x, y, z).premultiply(m);
+    const geo = new BoxGeometry(w, h, d).applyMatrix4(at);
+    this.tmp.set(color);
+    const n = geo.getAttribute("position").count;
+    const cols = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) cols.set([this.tmp.r, this.tmp.g, this.tmp.b], i * 3);
+    geo.setAttribute("color", new BufferAttribute(cols, 3));
+    this.solids.push(geo);
+    this.edges.push(new EdgesGeometry(new BoxGeometry(w, h, d)).applyMatrix4(at));
+  }
+  /** まとめた2つの部品を返す。 */
+  build(): Group {
+    const g = new Group();
+    g.add(new Mesh(mergeGeometries(this.solids), new MeshLambertMaterial({ vertexColors: true })));
+    g.add(new LineSegments(mergeGeometries(this.edges), new LineBasicMaterial({ color: INK })));
+    this.solids.forEach((x) => x.dispose());
+    this.edges.forEach((x) => x.dispose());
+    return g;
+  }
 }
 
 // ---- 1体ぶんの動き ----
@@ -144,6 +175,8 @@ export interface Stage {
   hit(side: 0 | 1, slot: number, target: number, power: Power, color: string, onImpact: (x: number, y: number) => void): void;
   down(side: 0 | 1, slot: number): void;
   cheer(side: 0 | 1): void;
+  /** 試合が終わった。動きが落ち着いたら描くのを止める。 */
+  settle(): void;
   dispose(): void;
 }
 
@@ -151,7 +184,9 @@ export interface Stage {
 export async function createStage(host: HTMLElement, fighters: LiveFighter[][], front: [number, number]): Promise<Stage> {
   const calm = reducedMotion();
   const renderer = new WebGLRenderer({ antialias: true, alpha: false, powerPreference: "low-power" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // 細かさは最大1.5倍まで（2倍だと描く点の数が1.8倍になり、安いスマホで重い）。遅ければ下で1倍に下げる
+  let pixelRatio = Math.min(window.devicePixelRatio, 1.5);
+  renderer.setPixelRatio(pixelRatio);
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.setClearColor(PAPER);
   const canvas = renderer.domElement;
@@ -209,34 +244,33 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
   // 奥の棚（商品の箱は色だけ。文字やロゴは描かない）
   const goods = ["#F6B3C7", "#FFD36B", "#9BDCF5", "#B9E58A", "#EF5D4E", "#F3A63D", "#C3AAEC", "#E9C68C", "#8C6B56", "#F2EE6B", "#3F6E5C", "#ffffff"];
   let gi = 0;
+  const batch = new StaticBatch();
   const shelf = (x: number, z: number, ry: number) => {
-    const s = new Group();
+    const m = new Matrix4().makeRotationY(ry).setPosition(x, 0, z);
     const W = 2.6, H = 2.3, D = 0.7;
-    s.add(inkedBox(W, 0.12, D, "#ffffff").translateY(0.06));
-    for (const y of [0.85, 1.6, 2.3]) s.add(inkedBox(W, 0.07, D, "#ffffff").translateY(y));
-    s.add(inkedBox(0.08, H, D, "#ffffff").translateX(-W / 2).translateY(H / 2));
-    s.add(inkedBox(0.08, H, D, "#ffffff").translateX(W / 2).translateY(H / 2));
-    s.add(inkedBox(W, H, 0.05, "#e6eae7").translateY(H / 2).translateZ(-D / 2));
+    batch.box(m, W, 0.12, D, 0, 0.06, 0, "#ffffff");
+    for (const y of [0.85, 1.6, 2.3]) batch.box(m, W, 0.07, D, 0, y, 0, "#ffffff");
+    batch.box(m, 0.08, H, D, -W / 2, H / 2, 0, "#ffffff");
+    batch.box(m, 0.08, H, D, W / 2, H / 2, 0, "#ffffff");
+    batch.box(m, W, H, 0.05, 0, H / 2, -D / 2, "#e6eae7");
     for (const [y0, h] of [[0.12, 0.62], [0.89, 0.6], [1.64, 0.55]] as const) {
       let cx = -W / 2 + 0.12;
       while (cx < W / 2 - 0.3) {
         const w = 0.26 + ((gi * 37) % 5) * 0.05;
         const hh = h * (0.7 + ((gi * 13) % 4) * 0.08);
-        s.add(inkedBox(w, hh, 0.42, goods[gi++ % goods.length]).translateX(cx + w / 2).translateY(y0 + hh / 2).translateZ(0.05));
+        batch.box(m, w, hh, 0.42, cx + w / 2, y0 + hh / 2, 0.05, goods[gi++ % goods.length]);
         cx += w + 0.05;
       }
     }
     // 値札のレール
-    for (const y of [0.88, 1.63]) s.add(inkedBox(W, 0.09, 0.02, POP).translateY(y - 0.07).translateZ(D / 2 + 0.01));
-    s.position.set(x, 0, z);
-    s.rotation.y = ry;
-    scene.add(s);
+    for (const y of [0.88, 1.63]) batch.box(m, W, 0.09, 0.02, 0, y - 0.07, D / 2 + 0.01, POP);
   };
   shelf(-2.75, -5.6, 0);
   shelf(0, -5.6, 0);
   shelf(2.75, -5.6, 0);
   shelf(-6.0, -3.2, Math.PI / 2.6);
   shelf(6.0, -3.2, -Math.PI / 2.6);
+  scene.add(batch.build());
 
   // 天井からさがる特売のPOP
   const popTex = canvasTexture(256, 128, (g) => {
@@ -324,27 +358,32 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
     }),
   );
 
-  // ---- 縞の破片（使い回す） ----
-  const shardGeo = new BoxGeometry(0.045, 0.36, 0.045);
-  const shards = Array.from({ length: 72 }, (_, i) => {
-    const m = new Mesh(shardGeo, new MeshBasicMaterial({ color: i % 2 ? INK : "#ffffff", transparent: true }));
-    m.visible = false;
-    m.renderOrder = 4;
-    scene.add(m);
-    return { m, v: new Vector3(), spin: new Vector3(), life: 0, max: 1 };
-  });
+  // ---- 縞の破片（使い回す）。1つの部品でまとめて描く（1枚ずつだと飛び散るたびに数十回描くことになる） ----
+  const SHARDS = 72;
+  const shardMesh = new InstancedMesh(new BoxGeometry(0.045, 0.36, 0.045), new MeshBasicMaterial({ color: "#ffffff" }), SHARDS);
+  shardMesh.renderOrder = 4;
+  shardMesh.frustumCulled = false;
+  const hidden = new Matrix4().makeScale(0, 0, 0);
+  for (let i = 0; i < SHARDS; i++) {
+    shardMesh.setMatrixAt(i, hidden);
+    shardMesh.setColorAt(i, new Color(INK));
+  }
+  scene.add(shardMesh);
+  const shards = Array.from({ length: SHARDS }, () => ({ m: new Object3D(), v: new Vector3(), spin: new Vector3(), life: 0, max: 1, len: 1, alive: false }));
   let shardAt = 0;
+  const shardColor = new Color();
   function spray(at: Vector3, dir: Vector3, color: string, power: Power) {
     if (calm) return;
     const n = power === "move" ? 26 : power === "strong" ? 18 : power === "weak" ? 6 : 12;
     const speed = power === "move" ? 6.5 : power === "strong" ? 5 : 3.6;
     for (let i = 0; i < n; i++) {
-      const s = shards[shardAt++ % shards.length];
-      s.m.visible = true;
-      (s.m.material as MeshBasicMaterial).color.set(i % 2 ? INK : color);
-      (s.m.material as MeshBasicMaterial).opacity = 1;
+      const idx = shardAt++ % SHARDS;
+      const s = shards[idx];
+      s.alive = true;
+      shardMesh.setColorAt(idx, shardColor.set(i % 2 ? INK : color));
       s.m.position.copy(at);
-      s.m.scale.set(1, 0.6 + Math.random() * 0.9, 1);
+      s.m.rotation.set(0, 0, 0);
+      s.len = 0.6 + Math.random() * 0.9;
       const a = Math.random() * Math.PI * 2;
       s.v.set(Math.cos(a), Math.abs(Math.sin(a)) * 0.9 + 0.5, (Math.random() - 0.5) * 0.6).normalize().multiplyScalar(speed * (0.6 + Math.random() * 0.6));
       s.v.addScaledVector(dir, speed * 0.4);
@@ -352,6 +391,7 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
       s.life = 0;
       s.max = 0.5 + Math.random() * 0.35;
     }
+    if (shardMesh.instanceColor) shardMesh.instanceColor.needsUpdate = true;
   }
 
   // ---- 時計（当たった瞬間に少し止める） ----
@@ -422,7 +462,10 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
       if (!a || !t) return;
       a.warn.visible = false;
       const { d, len } = dirTo(a, t);
-      const reach = Math.max(0.6, len - 0.95);
+      // 相手まで走り込むのは先頭だけ。後ろの2体は短く踏み込む（援護）。
+      // 全員が相手の先頭まで走ると、真ん中で3〜4体が重なって何が起きているか分からなくなるため
+      const isFront = pads[side].userData.front === slot;
+      const reach = isFront ? Math.max(0.6, len - 1.35) : Math.min(0.85, len * 0.25);
       const big = power === "move";
       const dur = big ? 520 : 300;
       const HIT = 0.34;
@@ -512,6 +555,9 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
         });
       });
     },
+    settle() {
+      ending = true;
+    },
     dispose() {
       cancelAnimationFrame(raf);
       ro.disconnect();
@@ -543,8 +589,13 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
     if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    // 縦長の画面では引いて、横の控えが切れないようにする
-    camera.fov = w / h < 1 ? 30 + (1 - w / h) * 18 : 30;
+    // こちらの後ろの2体（いちばん手前で左右に広い）が、左右からはみ出さない広さにする
+    const fwd = LOOK.clone().sub(CAM).normalize();
+    const back = SPOTS[0].left;
+    const depth = new Vector3(back.x, ART * 0.4, back.z).sub(CAM).dot(fwd);
+    const half = Math.abs(back.x) + ART * 0.5 + 0.12;
+    const fitH = 2 * Math.atan(Math.tan(Math.atan(half / depth)) / camera.aspect) * (180 / Math.PI);
+    camera.fov = Math.max(30, fitH);
     camera.updateProjectionMatrix();
   };
   const ro = new ResizeObserver(resize);
@@ -553,10 +604,36 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
 
   // ---- 毎フレーム ----
   let raf = 0;
+  let ending = false; // 試合が終わった
+  let skip = false; // 静かなときは1つおきに描く
+  let slowFrames = 0;
   const camTarget = new Vector3();
+  /** 動いているもの（体当たり・入れ替え・破片・揺れ・止め・これからの出来事・シールが出てくる途中）があるか。 */
+  const busy = () =>
+    freeze > 0 || quake > 0.002 || zoom > 0.002 || lean.lengthSq() > 1e-4 || timers.length > 0 ||
+    shards.some((x) => x.alive) ||
+    rigs.some((team) => team.some((r) => r.clip || r.hurt || r.moveT0 >= 0 || r.flash > 0 || (r.mat.map && r.mat.opacity < 1)));
   function frame(now: number) {
     raf = requestAnimationFrame(frame);
-    let dt = Math.min(50, now - lastReal);
+    const gap = now - lastReal;
+    const active = busy();
+    // 試合が終わって落ち着いたら、もう描かない（電池と熱のため）
+    if (ending && !active) {
+      lastReal = now;
+      return;
+    }
+    // 静かなとき（ゆらゆらしているだけ）は1つおきに描く
+    const afterSkip = skip;
+    skip = !active && !skip;
+    if (skip) return;
+    // 遅い端末では細かさを1倍に下げる（1コマ45ms以上が続いたら）。1つ飛ばした直後は間が倍になるので数えない
+    if (!afterSkip) slowFrames = gap > 45 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
+    if (slowFrames > 40 && pixelRatio > 1) {
+      pixelRatio = 1;
+      renderer.setPixelRatio(1);
+      resize();
+    }
+    let dt = Math.min(50, gap);
     lastReal = now;
     if (freeze > 0) {
       freeze -= dt;
@@ -600,7 +677,10 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
         // 倒れる：後ろに寝る
         r.art.rotation.set(-r.down * 1.35, 0, r.tilt);
         const breathe = alive && !calm ? 1 + Math.sin(sec * 2.6 + r.phase + 1) * 0.015 : 1;
-        r.art.scale.set(r.squash[0] * breathe, r.squash[1] / breathe, 1);
+        // こちらの後ろの2体は少し小さく（入れ替えの途中は、近いほうの大きさへなめらかに）
+        const toFront = r.side === 0 ? Math.max(0, Math.min(1, (SPOTS[0].left.z - r.home.z) / (SPOTS[0].left.z - SPOTS[0].front.z))) : 1;
+        const size = SUPPORT + (1 - SUPPORT) * toFront;
+        r.art.scale.set(r.squash[0] * breathe * size, (r.squash[1] / breathe) * size, 1);
         // 板はカメラのほうを向く（横回転だけ）
         r.root.rotation.y = Math.atan2(camera.position.x - r.root.position.x, camera.position.z - r.root.position.z);
         r.flash = Math.max(0, r.flash - dt / 170);
@@ -623,8 +703,10 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
 
     // 縞の破片
     const g = dt / 1000;
-    for (const s of shards) {
-      if (!s.m.visible) continue;
+    let shardsMoved = false;
+    shards.forEach((s, idx) => {
+      if (!s.alive) return;
+      shardsMoved = true;
       s.life += g;
       s.v.y -= 11 * g;
       s.m.position.addScaledVector(s.v, g);
@@ -636,9 +718,14 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
       s.m.rotation.x += s.spin.x * g;
       s.m.rotation.y += s.spin.y * g;
       s.m.rotation.z += s.spin.z * g;
-      (s.m.material as MeshBasicMaterial).opacity = Math.max(0, 1 - Math.max(0, s.life / s.max - 0.6) / 0.4);
-      if (s.life >= s.max) s.m.visible = false;
-    }
+      // 消えぎわは細く小さくする（1つの部品なので、1枚ずつ透けさせられない）
+      const fade = Math.max(0, 1 - Math.max(0, s.life / s.max - 0.6) / 0.4);
+      s.m.scale.set(fade, s.len * fade, fade);
+      s.m.updateMatrix();
+      if (s.life >= s.max) s.alive = false;
+      shardMesh.setMatrixAt(idx, s.alive ? s.m.matrix : hidden);
+    });
+    if (shardsMoved) shardMesh.instanceMatrix.needsUpdate = true;
 
     // カメラ：揺れ・寄り・技のときに少し傾く
     quake = Math.max(0, quake - dt / 1000 * 0.9);
@@ -655,5 +742,18 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
     renderer.render(scene, camera);
   }
   raf = requestAnimationFrame(frame);
+
+  // 開発中だけ：描画の回数と、キャラの絵が画面のどこにあるかを外から見られるようにする（重さと重なりを測るため）
+  if (import.meta.env.DEV) {
+    (globalThis as unknown as { __stage3d?: unknown }).__stage3d = {
+      info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, pixelRatio: renderer.getPixelRatio() }),
+      rects: () =>
+        rigs.flat().map((r) => {
+          const pts = [-ART / 2, ART / 2].flatMap((dx) => [0, ART * (1 - groundFrac) * 0.92].map((dy) => project(new Vector3(r.home.x + dx, dy, r.home.z))));
+          const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
+          return { side: r.side, slot: r.slot, down: r.down >= 1, x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
+        }),
+    };
+  }
   return stage;
 }

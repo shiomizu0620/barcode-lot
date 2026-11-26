@@ -117,7 +117,8 @@ export const battleLiveView: View = ({ root }) => {
         if (gone) s.dispose();
         else stage = s;
       })
-      .catch(() => {
+      .catch((e) => {
+        if (import.meta.env.DEV) console.error("3Dの舞台を作れませんでした", e);
         // WebGLが動かない端末：絵を出して2Dのまま続ける
         root.querySelector(".live")?.classList.remove("is-3d");
       });
@@ -282,6 +283,7 @@ export const battleLiveView: View = ({ root }) => {
     if (ev.winner === ME) sfx.win();
     else if (ev.winner === FOE) sfx.lose();
     if (ev.winner !== -1) stage?.cheer(ev.winner);
+    stage?.settle();
     if (ev.winner !== -1 && !stage) {
       state.fighters[ev.winner].forEach((f, i) => {
         if (f.hp > 0) void play(cells[ev.winner as 0 | 1][i].body, [{ transform: "none" }, { transform: "translateY(-18px)", offset: 0.3 }, { transform: "none", offset: 0.6 }, { transform: "translateY(-8px)", offset: 0.8 }, { transform: "none" }], 700, { delay: i * 90 });
