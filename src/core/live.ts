@@ -4,7 +4,7 @@
 //
 // 決まり（くわしくは docs/battle-plan.md）：
 // - 3体とも自分の間隔（キレが高いほど短い）がたまると、攻撃の列に並ぶ
-// - 攻撃は1つずつ。列の先頭の子が「ため」→ 当たる → ひと呼吸おいて、次の子。技は列に割り込む（ほかの技の後ろ）
+// - 攻撃は1つずつ。列の先頭の子が「ため」→ 当たる → ひと呼吸おいて、次の子。技は列に割り込み（ほかの技の後ろ）、長めのためのあとに当たる
 // - 攻撃は2種類。「からだ」（体当たり。濃さで強くなる）と「あじ」（味のしぶき。香りで強くなり、味ごとの効き目が付く）
 //   濃さが高い子は「からだ型」、香りが高い子は「あじ型」で、得意なほうをよく使う
 // - どちらの攻撃も、相手の誰にでも当たる（先頭はない）
@@ -30,7 +30,8 @@ export const LIVE = {
   intervalPerKire: 0.16,
   windup: 4, // 攻撃の前の「ため」（0.8秒）
   recover: 3, // 当たったあと、次の子が動き出すまでのひと呼吸（0.6秒）
-  moveRecover: 5, // 技のあとのひと呼吸（1秒。技名の値札を読む間）
+  moveWindup: 6, // 技の「ため」（1.2秒。技名の帯が入り、力をためる演出の間）
+  moveRecover: 4, // 技のあとのひと呼吸（0.8秒。当たりの演出と値札を読む間）
   typeBias: 1.12, // 濃さと香りの片方がもう片方のこれ倍以上なら「型」になる
   typeShare: 0.75, // 型の子が、得意なほうの攻撃を選ぶ割合
   gaugeMax: 100,
@@ -130,6 +131,7 @@ export type LiveEvent =
   | { t: "wipe"; side: 0 | 1; slot: number } // 拭いた
   | { t: "aim"; side: 0 | 1; target: number | null } // ねらう相手が変わった
   | { t: "ready"; side: 0 | 1; slot: number } // 技のゲージが満タンになった
+  | { t: "special"; side: 0 | 1; slot: number; target: number; kind: Kind; name: string } // 技のために入った（当たるのは moveWindup コマあと）
   | { t: "down"; side: 0 | 1; slot: number }
   | { t: "end"; winner: 0 | 1 | -1; reason: "ko" | "time" };
 
@@ -277,14 +279,6 @@ export function stepLive(state: LiveState, inputs: LiveInput[] = []): LiveEvent[
     state.queue.splice(at < 0 ? state.queue.length : at, 0, { side: f.side, slot: f.slot, move: true });
   };
 
-  /** 技を出す（列の順番が来たとき）。 */
-  const fireMove = (f: LiveFighter) => {
-    const target = pickTarget(f);
-    f.gauge = 0;
-    f.fullAt = null;
-    if (target !== null) strike(f, target, moveKind(f), true);
-  };
-
   // 1) 操作（CPUのぶんも同じ形で足す）
   const all = [...inputs];
   for (const side of [0, 1] as const) if (state.cpu[side]) all.push(...think(state, side));
@@ -356,7 +350,11 @@ export function stepLive(state: LiveState, inputs: LiveInput[] = []): LiveEvent[
       if (a.phase === "windup") {
         // ためている間に相手が倒れていたら、ほかの子へ
         const target = alive(fighters[1 - f.side][f.windupTarget]) ? f.windupTarget : pickTarget(f);
-        if (target !== null) strike(f, target, f.windupKind, false);
+        if (target !== null) strike(f, target, f.windupKind, a.move);
+        if (a.move) {
+          state.act = { ...a, phase: "recover", left: LIVE.moveRecover };
+          break;
+        }
         f.wait = Math.max(1, f.interval - LIVE.windup - LIVE.recover); // 動いていたぶんを引いて、間隔は変えない
         state.act = { ...a, phase: "recover", left: LIVE.recover };
         break;
@@ -367,14 +365,20 @@ export function stepLive(state: LiveState, inputs: LiveInput[] = []): LiveEvent[
     if (!next) break;
     const f = fighters[next.side][next.slot];
     if (!alive(f)) continue;
-    if (next.move) {
-      if (f.gauge < LIVE.gaugeMax) continue;
-      fireMove(f);
-      state.act = { ...next, phase: "recover", left: LIVE.moveRecover };
-      break;
-    }
     const target = pickTarget(f);
     if (target === null) continue;
+    if (next.move) {
+      // 技：ゲージを使い切って、長めのために入る（ため → 当たる は、ふつうの攻撃と同じ流れ）
+      if (f.gauge < LIVE.gaugeMax) continue;
+      f.gauge = 0;
+      f.fullAt = null;
+      f.windup = LIVE.moveWindup;
+      f.windupKind = moveKind(f);
+      f.windupTarget = target;
+      events.push({ t: "special", side: f.side, slot: f.slot, target, kind: f.windupKind, name: f.spec.move });
+      state.act = { ...next, phase: "windup", left: LIVE.moveWindup };
+      break;
+    }
     f.windup = LIVE.windup;
     f.windupKind = chooseKind(f);
     f.windupTarget = target;

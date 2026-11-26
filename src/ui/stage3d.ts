@@ -174,6 +174,8 @@ export interface Stage {
   hit(side: 0 | 1, slot: number, target: number, kind: Kind, power: Power, color: string, onImpact: (x: number, y: number) => void): void;
   /** こちらがねらう相手の足もとに輪を出す（null で消す）。 */
   aim(target: number | null): void;
+  /** 技のため（ms のあいだ）。からだは宙に浮いて回り、あじは体がふくらむ。 */
+  special(side: 0 | 1, slot: number, kind: Kind, ms: number): void;
   wipe(side: 0 | 1, slot: number): void;
   /** その子の体の真ん中が、画面のどこにあるか。 */
   where(side: 0 | 1, slot: number): { x: number; y: number };
@@ -538,6 +540,30 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][]):
     },
     aim(target) {
       aimRing.userData.target = target;
+    },
+    special(side, slot, kind, ms) {
+      const r = rigs[side][slot];
+      if (!r || calm) return;
+      r.warn.visible = false;
+      r.clip = {
+        t0: clock, dur: ms,
+        run: (k, rr) => {
+          const e = easeInOut(k);
+          if (kind === "karada") {
+            // かがむ → 浮いて回る
+            if (k < 0.4) rr.squash = [1 + 0.2 * (k / 0.4), 1 - 0.22 * (k / 0.4)];
+            else {
+              const u = (k - 0.4) / 0.6;
+              rr.squash = [1, 1];
+              rr.lift = easeOut(u) * 0.95;
+              rr.tilt = -Math.PI * 2 * easeInOut(u);
+            }
+          } else {
+            const w = Math.sin(k * Math.PI * 8) * 0.04 * (1 - k);
+            rr.squash = [1 + 0.26 * e + w, 1 + 0.2 * e - w];
+          }
+        },
+      };
     },
     wipe(side, slot) {
       const r = rigs[side][slot];

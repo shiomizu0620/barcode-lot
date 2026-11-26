@@ -110,6 +110,11 @@ export const sfx = {
   aim() {
     tone(1760, 0.04, 0, "square", 0.03);
   },
+  /** 技のため：上がっていく音。 */
+  charge() {
+    tone(260, 0.7, 0, "sawtooth", 0.035, 1300);
+    [1568, 2093].forEach((f, i) => tone(f, 0.05, 0.55 + i * 0.07, "square", 0.04));
+  },
   move() {
     [880, 1175, 1568].forEach((f, i) => tone(f, 0.07, i * 0.05, "square", 0.06));
     tone(70, 0.3, 0.12, "sawtooth", 0.07, 40);

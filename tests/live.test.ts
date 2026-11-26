@@ -150,10 +150,16 @@ describe("手を出せるバトル（からだ・あじ）", () => {
     const f = state.fighters[0][2];
     f.gauge = LIVE.gaugeMax;
     f.fullAt = state.tick;
-    let waited = 0;
-    const hit = until(state, (e) => { waited++; return e.t === "hit" && !!e.move; }, 30, [{ side: 0, t: "move", slot: 2 }]);
-    expect(hit && hit.t === "hit" && hit.slot).toBe(2);
-    expect(waited).toBeLessThanOrEqual(LIVE.windup + LIVE.recover + 1);
+    const t0 = state.tick;
+    const start = until(state, (e) => e.t === "special", 30, [{ side: 0, t: "move", slot: 2 }]);
+    expect(start && start.t === "special" && start.slot).toBe(2);
+    expect(state.tick - t0).toBeLessThanOrEqual(LIVE.windup + LIVE.recover + 1); // 今の攻撃が終わったらすぐ
+    expect(f.gauge).toBe(0);
+    // 技のためのあいだは、ほかの子は動かない。ためが終わると当たる
+    const t1 = state.tick;
+    const hit = until(state, (e) => e.t === "hit" || e.t === "windup", 30);
+    expect(hit && hit.t === "hit" && hit.move && hit.slot).toBe(2);
+    expect(state.tick - t1).toBe(LIVE.moveWindup);
   });
 
   it("ねらっていた子が倒れたら、ねらうのをやめる", () => {

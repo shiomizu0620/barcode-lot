@@ -9,7 +9,7 @@ import type { Taste } from "../../core/creature";
 import { isMuted, setMuted, sfx, unlock } from "../../device/sfx";
 import { recordDaily } from "../../store/daily";
 import { currentMatch, markLetterFought } from "../battle-session";
-import { burst, callout, centerIn, cutin, damagePop, play, popText, shake } from "../battle-fx";
+import { burst, callout, centerIn, confetti, cutin, damagePop, gather, play, popText, shake, shockwave, specialBand } from "../battle-fx";
 import { $ } from "../dom";
 import { characterSvg, TASTE_COLOR, tasteChip } from "../parts";
 import { clearReceipt, receiptHtml, showReceipt } from "../receipt";
@@ -59,6 +59,7 @@ export const battleLiveView: View = ({ root }) => {
   const use3d = want3d() && canUse3d();
   let fast = wantFast();
   const tickMs = () => LIVE.tickMs / (fast ? 2 : 1); // 実際の時間での1コマ
+  const ms = (n: number) => n / (fast ? 2 : 1); // 演出の長さ（倍速なら半分）
 
   root.innerHTML = `
     <section class="live${use3d ? " is-3d" : ""}" aria-label="バトル">
@@ -241,6 +242,87 @@ export const battleLiveView: View = ({ root }) => {
     sfx.hit(ev.match);
   }
 
+  /** 前の動き（ための姿勢など、最後の形で止めてあるもの）を消す。 */
+  const fresh = (el: Element) => el.getAnimations().forEach((a) => a.cancel());
+
+  /** 味のしぶきを1つ飛ばす。届いたら解決する。 */
+  function throwDrop(from: { x: number; y: number }, at: { x: number; y: number }, color: string, big: boolean, dur: number, arcK = 0.25) {
+    const drop = document.createElement("i");
+    drop.className = "drop";
+    if (big) drop.dataset.big = "";
+    drop.style.setProperty("--c", color);
+    drop.style.left = `${from.x}px`;
+    drop.style.top = `${from.y}px`;
+    fxLayer.appendChild(drop);
+    const dx = at.x - from.x, dy = at.y - from.y;
+    const arc = Math.max(24, Math.hypot(dx, dy) * arcK);
+    const turn = Math.atan2(dy, dx) * (180 / Math.PI);
+    return play(drop, [
+      { transform: `translate(-50%,-50%) rotate(${turn}deg) scale(.5)` },
+      { transform: `translate(calc(-50% + ${dx * 0.5}px), calc(-50% + ${dy * 0.5 - arc}px)) rotate(${turn}deg) scale(1.1,.85)`, offset: 0.5 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${turn}deg) scale(1.3,.7)` },
+    ], dur, { easing: "linear" }).then(() => drop.remove());
+  }
+
+  // 技のあいだは、技を出す子と受ける子だけを明るく残す
+  let spotTimer = 0;
+  function spotlight(side: number, slot: number, target: number) {
+    clearTimeout(spotTimer);
+    root.querySelectorAll(".in-special").forEach((e) => e.classList.remove("in-special"));
+    cells[side][slot].el.classList.add("in-special");
+    cells[1 - side][target].el.classList.add("in-special");
+    arena.classList.add("is-special");
+  }
+  function spotlightOff(after: number) {
+    clearTimeout(spotTimer);
+    spotTimer = window.setTimeout(() => arena.classList.remove("is-special"), after);
+  }
+
+  /** 技が当たる（2D）。からだは宙から叩きつけ、あじはしぶきを連射する。 */
+  function specialHit2d(ev: Extract<LiveEvent, { t: "hit" }>) {
+    const { ux, uy, len, from, at } = toward(ev.side, ev.slot, ev.target);
+    const attacker = cells[ev.side][ev.slot];
+    const color = tasteColors[ev.side][ev.slot];
+    const taste = state.fighters[ev.side][ev.slot].spec.taste;
+    const finale = () => {
+      if (gone) return;
+      impact2d(ev, ux, uy, at);
+      confetti(fxLayer, at.x, at.y, taste, color, 12);
+      if (ev.kind === "karada") shockwave(fxLayer, at.x, at.y + 26, color);
+      else burst(fxLayer, at.x + 18, at.y - 10, color, "strong");
+    };
+    fresh(attacker.body);
+    if (ev.kind === "karada") {
+      // 宙でくるっと回った形から、相手めがけて叩きつける → 戻る
+      const reach = len * 0.78;
+      const dur = ms(560);
+      void play(attacker.body, [
+        { transform: `translate(${ux * 20}px,${uy * 40}px) rotate(-360deg)` },
+        { transform: `translate(${ux * reach}px,${uy * reach}px) rotate(-360deg) scale(1.3,.72)`, offset: 0.35, easing: "linear" },
+        { transform: `translate(${ux * reach * 0.96}px,${uy * reach * 0.96}px) rotate(-360deg) scale(1.1,.92)`, offset: 0.6 },
+        { transform: "rotate(-360deg)" },
+      ], dur, { easing: "cubic-bezier(.6,0,.4,1)" });
+      window.setTimeout(finale, dur * 0.35);
+    } else {
+      // ふくらんだ体から、しぶきを5つ続けて飛ばす。最後の大きいのが届いたら当たる
+      const n = 5, gap = ms(75), fly = ms(260);
+      void play(attacker.body, [{ transform: "scale(1.28,1.2)" }, { transform: "scale(.92,1.08)", offset: 0.3 }, { transform: "scale(1.06,.96)", offset: 0.65 }, { transform: "none" }], gap * n + fly);
+      for (let i = 0; i < n; i++) {
+        const last = i === n - 1;
+        const jitter = last ? { x: 0, y: 0 } : { x: (Math.random() - 0.5) * 40, y: (Math.random() - 0.5) * 26 };
+        window.setTimeout(() => {
+          if (gone) return;
+          if (!last) sfx.splash();
+          void throwDrop(from, { x: at.x + jitter.x, y: at.y + jitter.y }, color, last, fly, 0.18 + i * 0.05).then(() => {
+            if (gone) return;
+            if (last) finale();
+            else burst(fxLayer, at.x + jitter.x, at.y + jitter.y, color, "weak");
+          });
+        }, gap * i);
+      }
+    }
+  }
+
   function moveCallout(ev: Extract<LiveEvent, { t: "hit" }>) {
     sfx.move();
     callout(mid, `${names[ev.side][ev.slot]}の「${ev.move}」`, ev.match === "strong" ? "よく効く！" : ev.match === "weak" ? "あまり効いていない" : "", ev.match === "strong" ? "strong" : ev.match === "weak" ? "weak" : "", ev.side);
@@ -250,6 +332,47 @@ export const battleLiveView: View = ({ root }) => {
   function show(events: LiveEvent[]) {
     for (const ev of events) {
       switch (ev.t) {
+        case "special": {
+          // 技のため：帯が入り、力をためる（moveWindup コマ）。当たるのは次の hit
+          const f = state.fighters[ev.side][ev.slot];
+          const d = LIVE.moveWindup * tickMs();
+          sfx.charge();
+          say(`${names[ev.side][ev.slot]}の技「${ev.name}」`);
+          spotlight(ev.side, ev.slot, ev.target);
+          void specialBand(fxLayer, characterSvg(f), ev.name, tasteColors[ev.side][ev.slot], ev.side, d * 0.8);
+          window.setTimeout(() => {
+            if (gone) return;
+            const p = spot(ev.side, ev.slot);
+            gather(fxLayer, p.x, p.y, tasteColors[ev.side][ev.slot], d * 0.5);
+          }, d * 0.45);
+          if (stage) {
+            stage.special(ev.side, ev.slot, ev.kind, d);
+            break;
+          }
+          const body = cells[ev.side][ev.slot].body;
+          fresh(body);
+          if (ev.kind === "karada") {
+            // かがんで → 相手のほうへ跳び上がり、くるっと回って宙で止まる
+            const { ux, uy } = toward(ev.side, ev.slot, ev.target);
+            void play(body, [
+              { transform: "none" },
+              { transform: "translateY(5px) scale(1.2,.76)", offset: 0.45 },
+              { transform: `translate(${ux * 16}px,${uy * 34}px) rotate(-300deg) scale(.94,1.06)`, offset: 0.85 },
+              { transform: `translate(${ux * 20}px,${uy * 40}px) rotate(-360deg)` },
+            ], d, { fill: "forwards", easing: "ease-in-out" });
+          } else {
+            // 体をふくらませる（ぷるぷるしながら）
+            void play(body, [
+              { transform: "none" },
+              { transform: "scale(1.12,.9)", offset: 0.25 },
+              { transform: "scale(.95,1.1)", offset: 0.45 },
+              { transform: "scale(1.2,1.12)", offset: 0.7 },
+              { transform: "scale(1.16,1.2)", offset: 0.85 },
+              { transform: "scale(1.28,1.2)" },
+            ], d, { fill: "forwards", easing: "ease-in-out" });
+          }
+          break;
+        }
         case "windup": {
           if (ev.side === FOE) sfx.windup();
           if (stage) {
@@ -264,49 +387,43 @@ export const battleLiveView: View = ({ root }) => {
         }
         case "hit": {
           const power = ev.move ? "move" : ev.match;
-          if (ev.move) moveCallout(ev);
+          if (ev.move) {
+            moveCallout(ev);
+            spotlightOff(LIVE.moveRecover * tickMs());
+          }
           if (stage) {
             const color = ev.kind === "aji" ? tasteColors[ev.side][ev.slot] : colors[ev.side][ev.slot];
             stage.hit(ev.side, ev.slot, ev.target, ev.kind, power, color, (x, y) => {
               damagePop(fxLayer, x, y - 18, ev.damage, power);
+              if (ev.move) confetti(fxLayer, x, y, state.fighters[ev.side][ev.slot].spec.taste, tasteColors[ev.side][ev.slot], 12);
               sfx.hit(ev.match);
             });
             if (!ev.move) ev.kind === "aji" ? sfx.splash() : sfx.dash();
             break;
           }
+          if (ev.move) {
+            specialHit2d(ev);
+            break;
+          }
           const { ux, uy, len, from, at } = toward(ev.side, ev.slot, ev.target);
           const attacker = cells[ev.side][ev.slot];
+          fresh(attacker.body);
           if (ev.kind === "karada") {
             // 体当たり → 当たった瞬間に止まる → もどる
-            const reach = Math.min(len * 0.5, ev.move ? 70 : 46);
+            const reach = Math.min(len * 0.5, 46);
             void play(attacker.body, [
               { transform: `translate(${-ux * 9}px,${-uy * 9}px) scale(.94,1.06)` },
               { transform: `translate(${ux * reach}px,${uy * reach}px) scale(1.1,.9)`, offset: 0.35, easing: "linear" },
               { transform: `translate(${ux * reach * 0.95}px,${uy * reach * 0.95}px)`, offset: 0.55 },
               { transform: "none" },
-            ], ev.move ? 420 : 260, { easing: "cubic-bezier(.5,0,.4,1)" });
-            if (!ev.move) sfx.dash();
+            ], ms(260), { easing: "cubic-bezier(.5,0,.4,1)" });
+            sfx.dash();
             impact2d(ev, ux, uy, at);
           } else {
             // あじ：その場で体をしぼって、味のしぶきを飛ばす。しぶきが届いたら当たる
             void play(attacker.body, [{ transform: `translate(0,${-uy * 4}px) scale(1.08,.94)` }, { transform: `translate(${ux * 6}px,${uy * 6}px) scale(.9,1.1)`, offset: 0.3 }, { transform: "none" }], 280);
-            if (!ev.move) sfx.splash();
-            const drop = document.createElement("i");
-            drop.className = "drop";
-            if (ev.move) drop.dataset.big = "";
-            drop.style.setProperty("--c", tasteColors[ev.side][ev.slot]);
-            drop.style.left = `${from.x}px`;
-            drop.style.top = `${from.y}px`;
-            fxLayer.appendChild(drop);
-            const dx = at.x - from.x, dy = at.y - from.y;
-            const arc = Math.max(24, len * 0.25);
-            const turn = Math.atan2(dy, dx) * (180 / Math.PI);
-            void play(drop, [
-              { transform: `translate(-50%,-50%) rotate(${turn}deg) scale(.5)` },
-              { transform: `translate(calc(-50% + ${dx * 0.5}px), calc(-50% + ${dy * 0.5 - arc}px)) rotate(${turn}deg) scale(1.1,.85)`, offset: 0.5 },
-              { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${turn}deg) scale(1.3,.7)` },
-            ], ev.move ? 360 : 250, { easing: "linear" }).then(() => {
-              drop.remove();
+            sfx.splash();
+            void throwDrop(from, at, tasteColors[ev.side][ev.slot], false, ms(250)).then(() => {
               if (!gone) impact2d(ev, ux, uy, at);
             });
           }
@@ -485,6 +602,7 @@ export const battleLiveView: View = ({ root }) => {
     gone = true;
     stop();
     stage?.dispose();
+    clearTimeout(spotTimer);
     clearReceipt();
   };
 };

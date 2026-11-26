@@ -520,3 +520,56 @@ body.battle-done main { padding-bottom: 0; }
 /* こちらの子がためているとき（いま動く子）は、頭の上に黄色い「！」 */
 .live-row[data-side="0"] .lf.is-winding .lf-warn { display: grid; color: var(--ink); background: var(--pop); }
 .sound.speed[aria-pressed="false"] { color: var(--ink); background: var(--white); border-color: var(--ink); }
+
+/* ---- 技の演出 ---- */
+/* 技の帯：味の色の地に、上下へバーコードの縞。絵と技名 */
+.sp-band {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  top: 50%;
+  margin-top: -52px;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10%;
+  background:
+    repeating-linear-gradient(90deg, var(--ink) 0 3px, transparent 3px 5px, var(--ink) 5px 6px, transparent 6px 10px, var(--ink) 10px 14px, transparent 14px 16px) top / 100% 9px no-repeat,
+    repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 6px, var(--ink) 6px 9px, transparent 9px 11px, var(--ink) 11px 12px, transparent 12px 16px) bottom / 100% 9px no-repeat,
+    var(--c);
+  border-top: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  z-index: 6;
+}
+.sp-band[data-side="1"] { flex-direction: row-reverse; }
+.sp-art { flex: none; width: 96px; height: 96px; margin-top: -18px; filter: drop-shadow(3px 3px 0 var(--ink)); }
+.sp-art svg { width: 100%; height: 100%; display: block; }
+.sp-text { display: grid; gap: 2px; min-width: 0; }
+.sp-band[data-side="1"] .sp-text { justify-items: end; }
+.sp-text i {
+  justify-self: start;
+  padding: 2px 7px 1px;
+  font: 400 12px/1.2 var(--font-display);
+  font-style: normal;
+  color: var(--white);
+  background: var(--sale);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  rotate: -10deg;
+}
+.sp-band[data-side="1"] .sp-text i { justify-self: end; }
+.sp-text b {
+  font: 400 26px/1.1 var(--font-display);
+  color: var(--white);
+  -webkit-text-stroke: 5px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 3px 3px 0 var(--ink);
+  white-space: nowrap;
+}
+@media (max-width: 359px) { .sp-text b { font-size: 21px; } .sp-art { width: 80px; height: 80px; } }
+/* 技のあいだは、技を出す子と受ける子のほかを暗くする */
+.arena.is-special .lf:not(.in-special) { opacity: .35; }
+.sp-wave { position: absolute; width: 110px; height: 110px; border: 6px solid; border-radius: 50%; }
+.sp-bit { position: absolute; width: 22px; height: 22px; }
+.sp-bit svg { width: 100%; height: 100%; display: block; }
