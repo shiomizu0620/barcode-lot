@@ -153,7 +153,8 @@
           "naiyo": 58,
           "koi": 58,
           "kire": 49,
-          "koku": 54
+          "koku": 54,
+          "kaori": 67
         }
       },
       "lots": [
@@ -169,7 +170,8 @@
               "naiyo": 65,
               "koi": 65,
               "kire": 57,
-              "koku": 47
+              "koku": 47,
+              "kaori": 66
             }
           }
         },
@@ -185,7 +187,8 @@
               "naiyo": 59,
               "koi": 52,
               "kire": 49,
-              "koku": 59
+              "koku": 59,
+              "kaori": 73
             }
           }
         },
@@ -201,7 +204,8 @@
               "naiyo": 55,
               "koi": 55,
               "kire": 44,
-              "koku": 60
+              "koku": 60,
+              "kaori": 73
             }
           }
         }
@@ -360,7 +364,8 @@
           "naiyo": 58,
           "koi": 71,
           "kire": 56,
-          "koku": 78
+          "koku": 78,
+          "kaori": 56
         }
       },
       "lots": [
@@ -376,7 +381,8 @@
               "naiyo": 51,
               "koi": 79,
               "kire": 55,
-              "koku": 74
+              "koku": 74,
+              "kaori": 56
             }
           }
         },
@@ -392,7 +398,8 @@
               "naiyo": 54,
               "koi": 65,
               "kire": 61,
-              "koku": 77
+              "koku": 77,
+              "kaori": 64
             }
           }
         },
@@ -408,7 +415,8 @@
               "naiyo": 57,
               "koi": 78,
               "kire": 56,
-              "koku": 84
+              "koku": 84,
+              "kaori": 57
             }
           }
         }
@@ -567,7 +575,8 @@
           "naiyo": 61,
           "koi": 48,
           "kire": 55,
-          "koku": 40
+          "koku": 40,
+          "kaori": 88
         }
       },
       "lots": [
@@ -583,7 +592,8 @@
               "naiyo": 55,
               "koi": 44,
               "kire": 47,
-              "koku": 34
+              "koku": 34,
+              "kaori": 95
             }
           }
         },
@@ -599,7 +609,8 @@
               "naiyo": 68,
               "koi": 52,
               "kire": 60,
-              "koku": 47
+              "koku": 47,
+              "kaori": 94
             }
           }
         },
@@ -615,7 +626,8 @@
               "naiyo": 65,
               "koi": 53,
               "kire": 48,
-              "koku": 40
+              "koku": 40,
+              "kaori": 94
             }
           }
         }
@@ -774,7 +786,8 @@
           "naiyo": 61,
           "koi": 41,
           "kire": 65,
-          "koku": 76
+          "koku": 76,
+          "kaori": 84
         }
       },
       "lots": [
@@ -790,7 +803,8 @@
               "naiyo": 69,
               "koi": 48,
               "kire": 57,
-              "koku": 75
+              "koku": 75,
+              "kaori": 88
             }
           }
         },
@@ -806,7 +820,8 @@
               "naiyo": 56,
               "koi": 36,
               "kire": 70,
-              "koku": 84
+              "koku": 84,
+              "kaori": 92
             }
           }
         },
@@ -822,7 +837,8 @@
               "naiyo": 60,
               "koi": 40,
               "kire": 70,
-              "koku": 78
+              "koku": 78,
+              "kaori": 79
             }
           }
         }
@@ -981,7 +997,8 @@
           "naiyo": 48,
           "koi": 54,
           "kire": 49,
-          "koku": 58
+          "koku": 58,
+          "kaori": 55
         }
       },
       "lots": [
@@ -997,7 +1014,8 @@
               "naiyo": 49,
               "koi": 52,
               "kire": 47,
-              "koku": 56
+              "koku": 56,
+              "kaori": 62
             }
           }
         },
@@ -1013,7 +1031,8 @@
               "naiyo": 45,
               "koi": 52,
               "kire": 53,
-              "koku": 53
+              "koku": 53,
+              "kaori": 47
             }
           }
         },
@@ -1029,7 +1048,8 @@
               "naiyo": 44,
               "koi": 58,
               "kire": 55,
-              "koku": 63
+              "koku": 63,
+              "kaori": 48
             }
           }
         }
@@ -1188,7 +1208,8 @@
           "naiyo": 61,
           "koi": 75,
           "kire": 48,
-          "koku": 76
+          "koku": 76,
+          "kaori": 69
         }
       },
       "lots": [
@@ -1204,7 +1225,8 @@
               "naiyo": 68,
               "koi": 82,
               "kire": 54,
-              "koku": 81
+              "koku": 81,
+              "kaori": 62
             }
           }
         },
@@ -1220,7 +1242,8 @@
               "naiyo": 63,
               "koi": 71,
               "kire": 42,
-              "koku": 70
+              "koku": 70,
+              "kaori": 70
             }
           }
         },
@@ -1236,7 +1259,8 @@
               "naiyo": 53,
               "koi": 80,
               "kire": 56,
-              "koku": 76
+              "koku": 76,
+              "kaori": 74
             }
           }
         }
@@ -1395,7 +1419,8 @@
           "naiyo": 71,
           "koi": 67,
           "kire": 47,
-          "koku": 52
+          "koku": 52,
+          "kaori": 85
         }
       },
       "lots": [
@@ -1411,7 +1436,8 @@
               "naiyo": 67,
               "koi": 60,
               "kire": 45,
-              "koku": 45
+              "koku": 45,
+              "kaori": 86
             }
           }
         },
@@ -1427,7 +1453,8 @@
               "naiyo": 67,
               "koi": 64,
               "kire": 52,
-              "koku": 47
+              "koku": 47,
+              "kaori": 90
             }
           }
         },
@@ -1443,7 +1470,8 @@
               "naiyo": 63,
               "koi": 72,
               "kire": 44,
-              "koku": 55
+              "koku": 55,
+              "kaori": 82
             }
           }
         }
@@ -1602,7 +1630,8 @@
           "naiyo": 64,
           "koi": 62,
           "kire": 88,
-          "koku": 83
+          "koku": 83,
+          "kaori": 47
         }
       },
       "lots": [
@@ -1618,7 +1647,8 @@
               "naiyo": 66,
               "koi": 61,
               "kire": 95,
-              "koku": 88
+              "koku": 88,
+              "kaori": 43
             }
           }
         },
@@ -1634,7 +1664,8 @@
               "naiyo": 67,
               "koi": 58,
               "kire": 84,
-              "koku": 83
+              "koku": 83,
+              "kaori": 50
             }
           }
         },
@@ -1650,7 +1681,8 @@
               "naiyo": 71,
               "koi": 61,
               "kire": 83,
-              "koku": 82
+              "koku": 82,
+              "kaori": 47
             }
           }
         }
@@ -1809,7 +1841,8 @@
           "naiyo": 54,
           "koi": 88,
           "kire": 57,
-          "koku": 55
+          "koku": 55,
+          "kaori": 56
         }
       },
       "lots": [
@@ -1825,7 +1858,8 @@
               "naiyo": 59,
               "koi": 86,
               "kire": 54,
-              "koku": 62
+              "koku": 62,
+              "kaori": 48
             }
           }
         },
@@ -1841,7 +1875,8 @@
               "naiyo": 60,
               "koi": 88,
               "kire": 56,
-              "koku": 51
+              "koku": 51,
+              "kaori": 50
             }
           }
         },
@@ -1857,7 +1892,8 @@
               "naiyo": 56,
               "koi": 96,
               "kire": 65,
-              "koku": 54
+              "koku": 54,
+              "kaori": 63
             }
           }
         }
@@ -2016,7 +2052,8 @@
           "naiyo": 42,
           "koi": 59,
           "kire": 69,
-          "koku": 50
+          "koku": 50,
+          "kaori": 62
         }
       },
       "lots": [
@@ -2032,7 +2069,8 @@
               "naiyo": 34,
               "koi": 62,
               "kire": 72,
-              "koku": 45
+              "koku": 45,
+              "kaori": 56
             }
           }
         },
@@ -2048,7 +2086,8 @@
               "naiyo": 46,
               "koi": 67,
               "kire": 71,
-              "koku": 44
+              "koku": 44,
+              "kaori": 54
             }
           }
         },
@@ -2064,7 +2103,8 @@
               "naiyo": 36,
               "koi": 62,
               "kire": 75,
-              "koku": 45
+              "koku": 45,
+              "kaori": 55
             }
           }
         }
@@ -2223,7 +2263,8 @@
           "naiyo": 44,
           "koi": 41,
           "kire": 49,
-          "koku": 54
+          "koku": 54,
+          "kaori": 73
         }
       },
       "lots": [
@@ -2239,7 +2280,8 @@
               "naiyo": 47,
               "koi": 33,
               "kire": 51,
-              "koku": 55
+              "koku": 55,
+              "kaori": 73
             }
           }
         },
@@ -2255,7 +2297,8 @@
               "naiyo": 52,
               "koi": 35,
               "kire": 45,
-              "koku": 46
+              "koku": 46,
+              "kaori": 69
             }
           }
         },
@@ -2271,7 +2314,8 @@
               "naiyo": 41,
               "koi": 44,
               "kire": 48,
-              "koku": 60
+              "koku": 60,
+              "kaori": 76
             }
           }
         }
@@ -2430,7 +2474,8 @@
           "naiyo": 59,
           "koi": 64,
           "kire": 47,
-          "koku": 87
+          "koku": 87,
+          "kaori": 46
         }
       },
       "lots": [
@@ -2446,7 +2491,8 @@
               "naiyo": 61,
               "koi": 56,
               "kire": 45,
-              "koku": 79
+              "koku": 79,
+              "kaori": 43
             }
           }
         },
@@ -2462,7 +2508,8 @@
               "naiyo": 54,
               "koi": 59,
               "kire": 48,
-              "koku": 79
+              "koku": 79,
+              "kaori": 54
             }
           }
         },
@@ -2478,7 +2525,8 @@
               "naiyo": 57,
               "koi": 71,
               "kire": 53,
-              "koku": 92
+              "koku": 92,
+              "kaori": 45
             }
           }
         }
@@ -2637,7 +2685,8 @@
           "naiyo": 87,
           "koi": 55,
           "kire": 70,
-          "koku": 62
+          "koku": 62,
+          "kaori": 46
         }
       },
       "lots": [
@@ -2653,7 +2702,8 @@
               "naiyo": 87,
               "koi": 63,
               "kire": 70,
-              "koku": 60
+              "koku": 60,
+              "kaori": 41
             }
           }
         },
@@ -2669,7 +2719,8 @@
               "naiyo": 87,
               "koi": 61,
               "kire": 64,
-              "koku": 62
+              "koku": 62,
+              "kaori": 54
             }
           }
         },
@@ -2685,7 +2736,8 @@
               "naiyo": 85,
               "koi": 55,
               "kire": 73,
-              "koku": 59
+              "koku": 59,
+              "kaori": 47
             }
           }
         }
@@ -2844,7 +2896,8 @@
           "naiyo": 41,
           "koi": 80,
           "kire": 84,
-          "koku": 67
+          "koku": 67,
+          "kaori": 76
         }
       },
       "lots": [
@@ -2860,7 +2913,8 @@
               "naiyo": 41,
               "koi": 81,
               "kire": 87,
-              "koku": 75
+              "koku": 75,
+              "kaori": 80
             }
           }
         },
@@ -2876,7 +2930,8 @@
               "naiyo": 34,
               "koi": 83,
               "kire": 87,
-              "koku": 73
+              "koku": 73,
+              "kaori": 69
             }
           }
         },
@@ -2892,7 +2947,8 @@
               "naiyo": 34,
               "koi": 72,
               "kire": 82,
-              "koku": 74
+              "koku": 74,
+              "kaori": 69
             }
           }
         }
@@ -3051,7 +3107,8 @@
           "naiyo": 67,
           "koi": 48,
           "kire": 40,
-          "koku": 51
+          "koku": 51,
+          "kaori": 57
         }
       },
       "lots": [
@@ -3067,7 +3124,8 @@
               "naiyo": 63,
               "koi": 42,
               "kire": 45,
-              "koku": 58
+              "koku": 58,
+              "kaori": 52
             }
           }
         },
@@ -3083,7 +3141,8 @@
               "naiyo": 59,
               "koi": 40,
               "kire": 40,
-              "koku": 59
+              "koku": 59,
+              "kaori": 53
             }
           }
         },
@@ -3099,7 +3158,8 @@
               "naiyo": 72,
               "koi": 43,
               "kire": 46,
-              "koku": 58
+              "koku": 58,
+              "kaori": 51
             }
           }
         }
@@ -3258,7 +3318,8 @@
           "naiyo": 72,
           "koi": 63,
           "kire": 67,
-          "koku": 65
+          "koku": 65,
+          "kaori": 47
         }
       },
       "lots": [
@@ -3274,7 +3335,8 @@
               "naiyo": 76,
               "koi": 56,
               "kire": 67,
-              "koku": 72
+              "koku": 72,
+              "kaori": 40
             }
           }
         },
@@ -3290,7 +3352,8 @@
               "naiyo": 78,
               "koi": 62,
               "kire": 60,
-              "koku": 62
+              "koku": 62,
+              "kaori": 49
             }
           }
         },
@@ -3306,7 +3369,8 @@
               "naiyo": 77,
               "koi": 66,
               "kire": 60,
-              "koku": 62
+              "koku": 62,
+              "kaori": 51
             }
           }
         }
@@ -3465,7 +3529,8 @@
           "naiyo": 45,
           "koi": 81,
           "kire": 45,
-          "koku": 55
+          "koku": 55,
+          "kaori": 83
         }
       },
       "lots": [
@@ -3481,7 +3546,8 @@
               "naiyo": 51,
               "koi": 85,
               "kire": 48,
-              "koku": 58
+              "koku": 58,
+              "kaori": 85
             }
           }
         },
@@ -3497,7 +3563,8 @@
               "naiyo": 46,
               "koi": 77,
               "kire": 50,
-              "koku": 59
+              "koku": 59,
+              "kaori": 90
             }
           }
         },
@@ -3513,7 +3580,8 @@
               "naiyo": 40,
               "koi": 88,
               "kire": 37,
-              "koku": 60
+              "koku": 60,
+              "kaori": 78
             }
           }
         }
@@ -3672,7 +3740,8 @@
           "naiyo": 81,
           "koi": 88,
           "kire": 75,
-          "koku": 76
+          "koku": 76,
+          "kaori": 60
         }
       },
       "lots": [
@@ -3688,7 +3757,8 @@
               "naiyo": 87,
               "koi": 96,
               "kire": 74,
-              "koku": 69
+              "koku": 69,
+              "kaori": 57
             }
           }
         },
@@ -3704,7 +3774,8 @@
               "naiyo": 84,
               "koi": 96,
               "kire": 79,
-              "koku": 77
+              "koku": 77,
+              "kaori": 54
             }
           }
         },
@@ -3720,7 +3791,8 @@
               "naiyo": 88,
               "koi": 82,
               "kire": 73,
-              "koku": 68
+              "koku": 68,
+              "kaori": 58
             }
           }
         }
@@ -3879,7 +3951,8 @@
           "naiyo": 72,
           "koi": 69,
           "kire": 71,
-          "koku": 68
+          "koku": 68,
+          "kaori": 71
         }
       },
       "lots": [
@@ -3895,7 +3968,8 @@
               "naiyo": 75,
               "koi": 61,
               "kire": 67,
-              "koku": 74
+              "koku": 74,
+              "kaori": 70
             }
           }
         },
@@ -3911,7 +3985,8 @@
               "naiyo": 65,
               "koi": 63,
               "kire": 68,
-              "koku": 71
+              "koku": 71,
+              "kaori": 66
             }
           }
         },
@@ -3927,7 +4002,8 @@
               "naiyo": 70,
               "koi": 65,
               "kire": 78,
-              "koku": 70
+              "koku": 70,
+              "kaori": 68
             }
           }
         }
@@ -4086,7 +4162,8 @@
           "naiyo": 70,
           "koi": 78,
           "kire": 50,
-          "koku": 50
+          "koku": 50,
+          "kaori": 64
         }
       },
       "lots": [
@@ -4102,7 +4179,8 @@
               "naiyo": 73,
               "koi": 76,
               "kire": 51,
-              "koku": 49
+              "koku": 49,
+              "kaori": 60
             }
           }
         },
@@ -4118,7 +4196,8 @@
               "naiyo": 64,
               "koi": 84,
               "kire": 57,
-              "koku": 42
+              "koku": 42,
+              "kaori": 65
             }
           }
         },
@@ -4134,7 +4213,8 @@
               "naiyo": 65,
               "koi": 70,
               "kire": 52,
-              "koku": 43
+              "koku": 43,
+              "kaori": 64
             }
           }
         }
@@ -4293,7 +4373,8 @@
           "naiyo": 88,
           "koi": 55,
           "kire": 64,
-          "koku": 77
+          "koku": 77,
+          "kaori": 49
         }
       },
       "lots": [
@@ -4309,7 +4390,8 @@
               "naiyo": 89,
               "koi": 48,
               "kire": 69,
-              "koku": 83
+              "koku": 83,
+              "kaori": 55
             }
           }
         },
@@ -4325,7 +4407,8 @@
               "naiyo": 88,
               "koi": 56,
               "kire": 58,
-              "koku": 71
+              "koku": 71,
+              "kaori": 56
             }
           }
         },
@@ -4341,7 +4424,8 @@
               "naiyo": 95,
               "koi": 59,
               "kire": 71,
-              "koku": 74
+              "koku": 74,
+              "kaori": 47
             }
           }
         }
@@ -4500,7 +4584,8 @@
           "naiyo": 43,
           "koi": 55,
           "kire": 87,
-          "koku": 66
+          "koku": 66,
+          "kaori": 53
         }
       },
       "lots": [
@@ -4516,7 +4601,8 @@
               "naiyo": 42,
               "koi": 58,
               "kire": 94,
-              "koku": 58
+              "koku": 58,
+              "kaori": 48
             }
           }
         },
@@ -4532,7 +4618,8 @@
               "naiyo": 41,
               "koi": 56,
               "kire": 92,
-              "koku": 66
+              "koku": 66,
+              "kaori": 59
             }
           }
         },
@@ -4548,7 +4635,8 @@
               "naiyo": 36,
               "koi": 63,
               "kire": 89,
-              "koku": 67
+              "koku": 67,
+              "kaori": 53
             }
           }
         }
@@ -4707,7 +4795,8 @@
           "naiyo": 52,
           "koi": 45,
           "kire": 75,
-          "koku": 47
+          "koku": 47,
+          "kaori": 49
         }
       },
       "lots": [
@@ -4723,7 +4812,8 @@
               "naiyo": 55,
               "koi": 45,
               "kire": 82,
-              "koku": 44
+              "koku": 44,
+              "kaori": 50
             }
           }
         },
@@ -4739,7 +4829,8 @@
               "naiyo": 47,
               "koi": 38,
               "kire": 74,
-              "koku": 42
+              "koku": 42,
+              "kaori": 53
             }
           }
         },
@@ -4755,7 +4846,8 @@
               "naiyo": 46,
               "koi": 48,
               "kire": 79,
-              "koku": 44
+              "koku": 44,
+              "kaori": 52
             }
           }
         }
@@ -4914,7 +5006,8 @@
           "naiyo": 57,
           "koi": 67,
           "kire": 68,
-          "koku": 52
+          "koku": 52,
+          "kaori": 41
         }
       },
       "lots": [
@@ -4930,7 +5023,8 @@
               "naiyo": 64,
               "koi": 60,
               "kire": 68,
-              "koku": 45
+              "koku": 45,
+              "kaori": 43
             }
           }
         },
@@ -4946,7 +5040,8 @@
               "naiyo": 51,
               "koi": 64,
               "kire": 74,
-              "koku": 44
+              "koku": 44,
+              "kaori": 42
             }
           }
         },
@@ -4962,7 +5057,8 @@
               "naiyo": 50,
               "koi": 63,
               "kire": 74,
-              "koku": 46
+              "koku": 46,
+              "kaori": 45
             }
           }
         }
@@ -5121,7 +5217,8 @@
           "naiyo": 51,
           "koi": 53,
           "kire": 63,
-          "koku": 44
+          "koku": 44,
+          "kaori": 69
         }
       },
       "lots": [
@@ -5137,7 +5234,8 @@
               "naiyo": 51,
               "koi": 50,
               "kire": 66,
-              "koku": 42
+              "koku": 42,
+              "kaori": 64
             }
           }
         },
@@ -5153,7 +5251,8 @@
               "naiyo": 51,
               "koi": 50,
               "kire": 57,
-              "koku": 47
+              "koku": 47,
+              "kaori": 70
             }
           }
         },
@@ -5169,7 +5268,8 @@
               "naiyo": 47,
               "koi": 56,
               "kire": 64,
-              "koku": 45
+              "koku": 45,
+              "kaori": 72
             }
           }
         }
@@ -5328,7 +5428,8 @@
           "naiyo": 61,
           "koi": 64,
           "kire": 86,
-          "koku": 51
+          "koku": 51,
+          "kaori": 68
         }
       },
       "lots": [
@@ -5344,7 +5445,8 @@
               "naiyo": 59,
               "koi": 68,
               "kire": 83,
-              "koku": 47
+              "koku": 47,
+              "kaori": 63
             }
           }
         },
@@ -5360,7 +5462,8 @@
               "naiyo": 63,
               "koi": 63,
               "kire": 94,
-              "koku": 48
+              "koku": 48,
+              "kaori": 62
             }
           }
         },
@@ -5376,7 +5479,8 @@
               "naiyo": 60,
               "koi": 64,
               "kire": 78,
-              "koku": 59
+              "koku": 59,
+              "kaori": 60
             }
           }
         }
@@ -5535,7 +5639,8 @@
           "naiyo": 70,
           "koi": 67,
           "kire": 60,
-          "koku": 84
+          "koku": 84,
+          "kaori": 57
         }
       },
       "lots": [
@@ -5551,7 +5656,8 @@
               "naiyo": 73,
               "koi": 66,
               "kire": 55,
-              "koku": 88
+              "koku": 88,
+              "kaori": 50
             }
           }
         },
@@ -5567,7 +5673,8 @@
               "naiyo": 69,
               "koi": 60,
               "kire": 59,
-              "koku": 78
+              "koku": 78,
+              "kaori": 49
             }
           }
         },
@@ -5583,7 +5690,8 @@
               "naiyo": 67,
               "koi": 65,
               "kire": 62,
-              "koku": 84
+              "koku": 84,
+              "kaori": 54
             }
           }
         }
@@ -5742,7 +5850,8 @@
           "naiyo": 87,
           "koi": 56,
           "kire": 64,
-          "koku": 70
+          "koku": 70,
+          "kaori": 75
         }
       },
       "lots": [
@@ -5758,7 +5867,8 @@
               "naiyo": 91,
               "koi": 60,
               "kire": 57,
-              "koku": 73
+              "koku": 73,
+              "kaori": 69
             }
           }
         },
@@ -5774,7 +5884,8 @@
               "naiyo": 90,
               "koi": 50,
               "kire": 62,
-              "koku": 78
+              "koku": 78,
+              "kaori": 74
             }
           }
         },
@@ -5790,7 +5901,8 @@
               "naiyo": 85,
               "koi": 51,
               "kire": 69,
-              "koku": 68
+              "koku": 68,
+              "kaori": 72
             }
           }
         }
@@ -5949,7 +6061,8 @@
           "naiyo": 74,
           "koi": 50,
           "kire": 58,
-          "koku": 71
+          "koku": 71,
+          "kaori": 42
         }
       },
       "lots": [
@@ -5965,7 +6078,8 @@
               "naiyo": 69,
               "koi": 47,
               "kire": 60,
-              "koku": 67
+              "koku": 67,
+              "kaori": 41
             }
           }
         },
@@ -5981,7 +6095,8 @@
               "naiyo": 76,
               "koi": 44,
               "kire": 65,
-              "koku": 74
+              "koku": 74,
+              "kaori": 45
             }
           }
         },
@@ -5997,7 +6112,8 @@
               "naiyo": 75,
               "koi": 47,
               "kire": 54,
-              "koku": 76
+              "koku": 76,
+              "kaori": 37
             }
           }
         }
@@ -6156,7 +6272,8 @@
           "naiyo": 80,
           "koi": 66,
           "kire": 75,
-          "koku": 56
+          "koku": 56,
+          "kaori": 47
         }
       },
       "lots": [
@@ -6172,7 +6289,8 @@
               "naiyo": 73,
               "koi": 69,
               "kire": 78,
-              "koku": 55
+              "koku": 55,
+              "kaori": 47
             }
           }
         },
@@ -6188,7 +6306,8 @@
               "naiyo": 72,
               "koi": 67,
               "kire": 74,
-              "koku": 54
+              "koku": 54,
+              "kaori": 42
             }
           }
         },
@@ -6204,7 +6323,8 @@
               "naiyo": 82,
               "koi": 64,
               "kire": 71,
-              "koku": 56
+              "koku": 56,
+              "kaori": 41
             }
           }
         }
@@ -6363,7 +6483,8 @@
           "naiyo": 82,
           "koi": 87,
           "kire": 75,
-          "koku": 79
+          "koku": 79,
+          "kaori": 60
         }
       },
       "lots": [
@@ -6379,7 +6500,8 @@
               "naiyo": 80,
               "koi": 80,
               "kire": 72,
-              "koku": 81
+              "koku": 81,
+              "kaori": 59
             }
           }
         },
@@ -6395,7 +6517,8 @@
               "naiyo": 86,
               "koi": 89,
               "kire": 82,
-              "koku": 84
+              "koku": 84,
+              "kaori": 64
             }
           }
         },
@@ -6411,7 +6534,8 @@
               "naiyo": 74,
               "koi": 80,
               "kire": 70,
-              "koku": 80
+              "koku": 80,
+              "kaori": 62
             }
           }
         }
@@ -6570,7 +6694,8 @@
           "naiyo": 53,
           "koi": 42,
           "kire": 86,
-          "koku": 49
+          "koku": 49,
+          "kaori": 60
         }
       },
       "lots": [
@@ -6586,7 +6711,8 @@
               "naiyo": 54,
               "koi": 42,
               "kire": 78,
-              "koku": 48
+              "koku": 48,
+              "kaori": 59
             }
           }
         },
@@ -6602,7 +6728,8 @@
               "naiyo": 56,
               "koi": 35,
               "kire": 92,
-              "koku": 49
+              "koku": 49,
+              "kaori": 68
             }
           }
         },
@@ -6618,7 +6745,8 @@
               "naiyo": 50,
               "koi": 46,
               "kire": 81,
-              "koku": 55
+              "koku": 55,
+              "kaori": 53
             }
           }
         }
@@ -6777,7 +6905,8 @@
           "naiyo": 46,
           "koi": 58,
           "kire": 56,
-          "koku": 56
+          "koku": 56,
+          "kaori": 64
         }
       },
       "lots": [
@@ -6793,7 +6922,8 @@
               "naiyo": 44,
               "koi": 61,
               "kire": 55,
-              "koku": 55
+              "koku": 55,
+              "kaori": 66
             }
           }
         },
@@ -6809,7 +6939,8 @@
               "naiyo": 39,
               "koi": 63,
               "kire": 63,
-              "koku": 57
+              "koku": 57,
+              "kaori": 61
             }
           }
         },
@@ -6825,7 +6956,8 @@
               "naiyo": 48,
               "koi": 58,
               "kire": 53,
-              "koku": 57
+              "koku": 57,
+              "kaori": 70
             }
           }
         }
@@ -6984,7 +7116,8 @@
           "naiyo": 88,
           "koi": 56,
           "kire": 78,
-          "koku": 63
+          "koku": 63,
+          "kaori": 73
         }
       },
       "lots": [
@@ -7000,7 +7133,8 @@
               "naiyo": 81,
               "koi": 54,
               "kire": 82,
-              "koku": 59
+              "koku": 59,
+              "kaori": 66
             }
           }
         },
@@ -7016,7 +7150,8 @@
               "naiyo": 93,
               "koi": 48,
               "kire": 71,
-              "koku": 59
+              "koku": 59,
+              "kaori": 72
             }
           }
         },
@@ -7032,7 +7167,8 @@
               "naiyo": 86,
               "koi": 52,
               "kire": 75,
-              "koku": 65
+              "koku": 65,
+              "kaori": 67
             }
           }
         }
@@ -7191,7 +7327,8 @@
           "naiyo": 50,
           "koi": 62,
           "kire": 85,
-          "koku": 41
+          "koku": 41,
+          "kaori": 73
         }
       },
       "lots": [
@@ -7207,7 +7344,8 @@
               "naiyo": 53,
               "koi": 56,
               "kire": 83,
-              "koku": 47
+              "koku": 47,
+              "kaori": 81
             }
           }
         },
@@ -7223,7 +7361,8 @@
               "naiyo": 55,
               "koi": 59,
               "kire": 86,
-              "koku": 45
+              "koku": 45,
+              "kaori": 77
             }
           }
         },
@@ -7239,7 +7378,8 @@
               "naiyo": 44,
               "koi": 60,
               "kire": 90,
-              "koku": 38
+              "koku": 38,
+              "kaori": 75
             }
           }
         }
@@ -7398,7 +7538,8 @@
           "naiyo": 83,
           "koi": 43,
           "kire": 54,
-          "koku": 75
+          "koku": 75,
+          "kaori": 80
         }
       },
       "lots": [
@@ -7414,7 +7555,8 @@
               "naiyo": 80,
               "koi": 49,
               "kire": 55,
-              "koku": 74
+              "koku": 74,
+              "kaori": 78
             }
           }
         },
@@ -7430,7 +7572,8 @@
               "naiyo": 91,
               "koi": 43,
               "kire": 51,
-              "koku": 82
+              "koku": 82,
+              "kaori": 73
             }
           }
         },
@@ -7446,7 +7589,8 @@
               "naiyo": 90,
               "koi": 41,
               "kire": 49,
-              "koku": 83
+              "koku": 83,
+              "kaori": 86
             }
           }
         }
@@ -7605,7 +7749,8 @@
           "naiyo": 66,
           "koi": 71,
           "kire": 59,
-          "koku": 67
+          "koku": 67,
+          "kaori": 81
         }
       },
       "lots": [
@@ -7621,7 +7766,8 @@
               "naiyo": 63,
               "koi": 70,
               "kire": 51,
-              "koku": 64
+              "koku": 64,
+              "kaori": 73
             }
           }
         },
@@ -7637,7 +7783,8 @@
               "naiyo": 64,
               "koi": 67,
               "kire": 67,
-              "koku": 64
+              "koku": 64,
+              "kaori": 87
             }
           }
         },
@@ -7653,7 +7800,8 @@
               "naiyo": 69,
               "koi": 63,
               "kire": 54,
-              "koku": 61
+              "koku": 61,
+              "kaori": 82
             }
           }
         }
@@ -7812,7 +7960,8 @@
           "naiyo": 78,
           "koi": 74,
           "kire": 46,
-          "koku": 65
+          "koku": 65,
+          "kaori": 83
         }
       },
       "lots": [
@@ -7828,7 +7977,8 @@
               "naiyo": 71,
               "koi": 77,
               "kire": 46,
-              "koku": 72
+              "koku": 72,
+              "kaori": 88
             }
           }
         },
@@ -7844,7 +7994,8 @@
               "naiyo": 80,
               "koi": 72,
               "kire": 43,
-              "koku": 58
+              "koku": 58,
+              "kaori": 91
             }
           }
         },
@@ -7860,7 +8011,8 @@
               "naiyo": 72,
               "koi": 75,
               "kire": 51,
-              "koku": 73
+              "koku": 73,
+              "kaori": 90
             }
           }
         }
@@ -8019,7 +8171,8 @@
           "naiyo": 45,
           "koi": 50,
           "kire": 62,
-          "koku": 58
+          "koku": 58,
+          "kaori": 82
         }
       },
       "lots": [
@@ -8035,7 +8188,8 @@
               "naiyo": 53,
               "koi": 46,
               "kire": 57,
-              "koku": 61
+              "koku": 61,
+              "kaori": 88
             }
           }
         },
@@ -8051,7 +8205,8 @@
               "naiyo": 47,
               "koi": 44,
               "kire": 57,
-              "koku": 54
+              "koku": 54,
+              "kaori": 84
             }
           }
         },
@@ -8067,7 +8222,8 @@
               "naiyo": 38,
               "koi": 47,
               "kire": 62,
-              "koku": 62
+              "koku": 62,
+              "kaori": 77
             }
           }
         }
@@ -8226,7 +8382,8 @@
           "naiyo": 49,
           "koi": 65,
           "kire": 60,
-          "koku": 80
+          "koku": 80,
+          "kaori": 77
         }
       },
       "lots": [
@@ -8242,7 +8399,8 @@
               "naiyo": 55,
               "koi": 63,
               "kire": 67,
-              "koku": 73
+              "koku": 73,
+              "kaori": 83
             }
           }
         },
@@ -8258,7 +8416,8 @@
               "naiyo": 41,
               "koi": 64,
               "kire": 58,
-              "koku": 73
+              "koku": 73,
+              "kaori": 70
             }
           }
         },
@@ -8274,7 +8433,8 @@
               "naiyo": 44,
               "koi": 73,
               "kire": 64,
-              "koku": 75
+              "koku": 75,
+              "kaori": 83
             }
           }
         }
@@ -8433,7 +8593,8 @@
           "naiyo": 52,
           "koi": 55,
           "kire": 47,
-          "koku": 75
+          "koku": 75,
+          "kaori": 53
         }
       },
       "lots": [
@@ -8449,7 +8610,8 @@
               "naiyo": 44,
               "koi": 48,
               "kire": 42,
-              "koku": 80
+              "koku": 80,
+              "kaori": 50
             }
           }
         },
@@ -8465,7 +8627,8 @@
               "naiyo": 51,
               "koi": 60,
               "kire": 39,
-              "koku": 69
+              "koku": 69,
+              "kaori": 57
             }
           }
         },
@@ -8481,7 +8644,8 @@
               "naiyo": 54,
               "koi": 58,
               "kire": 40,
-              "koku": 67
+              "koku": 67,
+              "kaori": 51
             }
           }
         }
@@ -8640,7 +8804,8 @@
           "naiyo": 85,
           "koi": 43,
           "kire": 68,
-          "koku": 62
+          "koku": 62,
+          "kaori": 40
         }
       },
       "lots": [
@@ -8656,7 +8821,8 @@
               "naiyo": 80,
               "koi": 39,
               "kire": 70,
-              "koku": 57
+              "koku": 57,
+              "kaori": 33
             }
           }
         },
@@ -8672,7 +8838,8 @@
               "naiyo": 86,
               "koi": 47,
               "kire": 66,
-              "koku": 60
+              "koku": 60,
+              "kaori": 36
             }
           }
         },
@@ -8688,7 +8855,8 @@
               "naiyo": 78,
               "koi": 51,
               "kire": 73,
-              "koku": 65
+              "koku": 65,
+              "kaori": 32
             }
           }
         }
@@ -8847,7 +9015,8 @@
           "naiyo": 53,
           "koi": 57,
           "kire": 78,
-          "koku": 65
+          "koku": 65,
+          "kaori": 48
         }
       },
       "lots": [
@@ -8863,7 +9032,8 @@
               "naiyo": 61,
               "koi": 54,
               "kire": 75,
-              "koku": 65
+              "koku": 65,
+              "kaori": 50
             }
           }
         },
@@ -8879,7 +9049,8 @@
               "naiyo": 45,
               "koi": 56,
               "kire": 84,
-              "koku": 65
+              "koku": 65,
+              "kaori": 49
             }
           }
         },
@@ -8895,7 +9066,8 @@
               "naiyo": 60,
               "koi": 64,
               "kire": 76,
-              "koku": 71
+              "koku": 71,
+              "kaori": 52
             }
           }
         }
@@ -9054,7 +9226,8 @@
           "naiyo": 77,
           "koi": 66,
           "kire": 67,
-          "koku": 61
+          "koku": 61,
+          "kaori": 46
         }
       },
       "lots": [
@@ -9070,7 +9243,8 @@
               "naiyo": 72,
               "koi": 64,
               "kire": 75,
-              "koku": 67
+              "koku": 67,
+              "kaori": 49
             }
           }
         },
@@ -9086,7 +9260,8 @@
               "naiyo": 84,
               "koi": 64,
               "kire": 62,
-              "koku": 54
+              "koku": 54,
+              "kaori": 50
             }
           }
         },
@@ -9102,7 +9277,8 @@
               "naiyo": 77,
               "koi": 64,
               "kire": 67,
-              "koku": 65
+              "koku": 65,
+              "kaori": 46
             }
           }
         }
@@ -9261,7 +9437,8 @@
           "naiyo": 47,
           "koi": 46,
           "kire": 42,
-          "koku": 56
+          "koku": 56,
+          "kaori": 83
         }
       },
       "lots": [
@@ -9277,7 +9454,8 @@
               "naiyo": 42,
               "koi": 51,
               "kire": 49,
-              "koku": 49
+              "koku": 49,
+              "kaori": 77
             }
           }
         },
@@ -9293,7 +9471,8 @@
               "naiyo": 53,
               "koi": 54,
               "kire": 48,
-              "koku": 55
+              "koku": 55,
+              "kaori": 79
             }
           }
         },
@@ -9309,7 +9488,8 @@
               "naiyo": 52,
               "koi": 50,
               "kire": 46,
-              "koku": 62
+              "koku": 62,
+              "kaori": 81
             }
           }
         }
@@ -9468,7 +9648,8 @@
           "naiyo": 69,
           "koi": 81,
           "kire": 63,
-          "koku": 80
+          "koku": 80,
+          "kaori": 69
         }
       },
       "lots": [
@@ -9484,7 +9665,8 @@
               "naiyo": 62,
               "koi": 80,
               "kire": 67,
-              "koku": 86
+              "koku": 86,
+              "kaori": 71
             }
           }
         },
@@ -9500,7 +9682,8 @@
               "naiyo": 64,
               "koi": 84,
               "kire": 58,
-              "koku": 79
+              "koku": 79,
+              "kaori": 71
             }
           }
         },
@@ -9516,7 +9699,8 @@
               "naiyo": 68,
               "koi": 79,
               "kire": 56,
-              "koku": 74
+              "koku": 74,
+              "kaori": 61
             }
           }
         }
@@ -9675,7 +9859,8 @@
           "naiyo": 66,
           "koi": 59,
           "kire": 47,
-          "koku": 58
+          "koku": 58,
+          "kaori": 85
         }
       },
       "lots": [
@@ -9691,7 +9876,8 @@
               "naiyo": 65,
               "koi": 62,
               "kire": 41,
-              "koku": 55
+              "koku": 55,
+              "kaori": 89
             }
           }
         },
@@ -9707,7 +9893,8 @@
               "naiyo": 62,
               "koi": 54,
               "kire": 48,
-              "koku": 51
+              "koku": 51,
+              "kaori": 93
             }
           }
         },
@@ -9723,7 +9910,8 @@
               "naiyo": 67,
               "koi": 54,
               "kire": 42,
-              "koku": 62
+              "koku": 62,
+              "kaori": 85
             }
           }
         }
@@ -9882,7 +10070,8 @@
           "naiyo": 62,
           "koi": 69,
           "kire": 55,
-          "koku": 74
+          "koku": 74,
+          "kaori": 75
         }
       },
       "lots": [
@@ -9898,7 +10087,8 @@
               "naiyo": 61,
               "koi": 76,
               "kire": 60,
-              "koku": 75
+              "koku": 75,
+              "kaori": 82
             }
           }
         },
@@ -9914,7 +10104,8 @@
               "naiyo": 70,
               "koi": 77,
               "kire": 59,
-              "koku": 80
+              "koku": 80,
+              "kaori": 80
             }
           }
         },
@@ -9930,7 +10121,8 @@
               "naiyo": 68,
               "koi": 69,
               "kire": 56,
-              "koku": 68
+              "koku": 68,
+              "kaori": 82
             }
           }
         }
@@ -10089,7 +10281,8 @@
           "naiyo": 83,
           "koi": 63,
           "kire": 76,
-          "koku": 42
+          "koku": 42,
+          "kaori": 82
         }
       },
       "lots": [
@@ -10105,7 +10298,8 @@
               "naiyo": 82,
               "koi": 58,
               "kire": 69,
-              "koku": 37
+              "koku": 37,
+              "kaori": 74
             }
           }
         },
@@ -10121,7 +10315,8 @@
               "naiyo": 79,
               "koi": 68,
               "kire": 74,
-              "koku": 35
+              "koku": 35,
+              "kaori": 77
             }
           }
         },
@@ -10137,7 +10332,8 @@
               "naiyo": 75,
               "koi": 56,
               "kire": 83,
-              "koku": 37
+              "koku": 37,
+              "kaori": 75
             }
           }
         }
@@ -10296,7 +10492,8 @@
           "naiyo": 73,
           "koi": 74,
           "kire": 74,
-          "koku": 52
+          "koku": 52,
+          "kaori": 46
         }
       },
       "lots": [
@@ -10312,7 +10509,8 @@
               "naiyo": 74,
               "koi": 78,
               "kire": 69,
-              "koku": 59
+              "koku": 59,
+              "kaori": 39
             }
           }
         },
@@ -10328,7 +10526,8 @@
               "naiyo": 71,
               "koi": 75,
               "kire": 80,
-              "koku": 60
+              "koku": 60,
+              "kaori": 44
             }
           }
         },
@@ -10344,7 +10543,8 @@
               "naiyo": 81,
               "koi": 82,
               "kire": 73,
-              "koku": 51
+              "koku": 51,
+              "kaori": 46
             }
           }
         }
@@ -10388,7 +10588,8 @@
           "naiyo": 58,
           "koi": 58,
           "kire": 49,
-          "koku": 54
+          "koku": 54,
+          "kaori": 67
         }
       },
       "lots": [
@@ -10404,7 +10605,8 @@
               "naiyo": 65,
               "koi": 65,
               "kire": 57,
-              "koku": 47
+              "koku": 47,
+              "kaori": 66
             }
           }
         }
@@ -10446,7 +10648,8 @@
           "naiyo": 58,
           "koi": 71,
           "kire": 56,
-          "koku": 78
+          "koku": 78,
+          "kaori": 56
         }
       },
       "lots": [
@@ -10462,7 +10665,8 @@
               "naiyo": 51,
               "koi": 79,
               "kire": 55,
-              "koku": 74
+              "koku": 74,
+              "kaori": 56
             }
           }
         }
@@ -10504,7 +10708,8 @@
           "naiyo": 61,
           "koi": 48,
           "kire": 55,
-          "koku": 40
+          "koku": 40,
+          "kaori": 88
         }
       },
       "lots": [
@@ -10520,7 +10725,8 @@
               "naiyo": 55,
               "koi": 44,
               "kire": 47,
-              "koku": 34
+              "koku": 34,
+              "kaori": 95
             }
           }
         }
@@ -10562,7 +10768,8 @@
           "naiyo": 61,
           "koi": 41,
           "kire": 65,
-          "koku": 76
+          "koku": 76,
+          "kaori": 84
         }
       },
       "lots": [
@@ -10578,7 +10785,8 @@
               "naiyo": 69,
               "koi": 48,
               "kire": 57,
-              "koku": 75
+              "koku": 75,
+              "kaori": 88
             }
           }
         }
@@ -10620,7 +10828,8 @@
           "naiyo": 48,
           "koi": 54,
           "kire": 49,
-          "koku": 58
+          "koku": 58,
+          "kaori": 55
         }
       },
       "lots": [
@@ -10636,7 +10845,8 @@
               "naiyo": 49,
               "koi": 52,
               "kire": 47,
-              "koku": 56
+              "koku": 56,
+              "kaori": 62
             }
           }
         }
@@ -10678,7 +10888,8 @@
           "naiyo": 61,
           "koi": 75,
           "kire": 48,
-          "koku": 76
+          "koku": 76,
+          "kaori": 69
         }
       },
       "lots": [
@@ -10694,7 +10905,8 @@
               "naiyo": 68,
               "koi": 82,
               "kire": 54,
-              "koku": 81
+              "koku": 81,
+              "kaori": 62
             }
           }
         }
@@ -10736,7 +10948,8 @@
           "naiyo": 71,
           "koi": 67,
           "kire": 47,
-          "koku": 52
+          "koku": 52,
+          "kaori": 85
         }
       },
       "lots": [
@@ -10752,7 +10965,8 @@
               "naiyo": 67,
               "koi": 60,
               "kire": 45,
-              "koku": 45
+              "koku": 45,
+              "kaori": 86
             }
           }
         }
@@ -10794,7 +11008,8 @@
           "naiyo": 64,
           "koi": 62,
           "kire": 88,
-          "koku": 83
+          "koku": 83,
+          "kaori": 47
         }
       },
       "lots": [
@@ -10810,7 +11025,8 @@
               "naiyo": 66,
               "koi": 61,
               "kire": 95,
-              "koku": 88
+              "koku": 88,
+              "kaori": 43
             }
           }
         }
@@ -10852,7 +11068,8 @@
           "naiyo": 54,
           "koi": 88,
           "kire": 57,
-          "koku": 55
+          "koku": 55,
+          "kaori": 56
         }
       },
       "lots": [
@@ -10868,7 +11085,8 @@
               "naiyo": 59,
               "koi": 86,
               "kire": 54,
-              "koku": 62
+              "koku": 62,
+              "kaori": 48
             }
           }
         }
@@ -10910,7 +11128,8 @@
           "naiyo": 42,
           "koi": 59,
           "kire": 69,
-          "koku": 50
+          "koku": 50,
+          "kaori": 62
         }
       },
       "lots": [
@@ -10926,7 +11145,8 @@
               "naiyo": 34,
               "koi": 62,
               "kire": 72,
-              "koku": 45
+              "koku": 45,
+              "kaori": 56
             }
           }
         }
@@ -10968,7 +11188,8 @@
           "naiyo": 44,
           "koi": 41,
           "kire": 49,
-          "koku": 54
+          "koku": 54,
+          "kaori": 73
         }
       },
       "lots": [
@@ -10984,7 +11205,8 @@
               "naiyo": 47,
               "koi": 33,
               "kire": 51,
-              "koku": 55
+              "koku": 55,
+              "kaori": 73
             }
           }
         }
@@ -11026,7 +11248,8 @@
           "naiyo": 59,
           "koi": 64,
           "kire": 47,
-          "koku": 87
+          "koku": 87,
+          "kaori": 46
         }
       },
       "lots": [
@@ -11042,7 +11265,8 @@
               "naiyo": 61,
               "koi": 56,
               "kire": 45,
-              "koku": 79
+              "koku": 79,
+              "kaori": 43
             }
           }
         }
@@ -11084,7 +11308,8 @@
           "naiyo": 87,
           "koi": 55,
           "kire": 70,
-          "koku": 62
+          "koku": 62,
+          "kaori": 46
         }
       },
       "lots": [
@@ -11100,7 +11325,8 @@
               "naiyo": 87,
               "koi": 63,
               "kire": 70,
-              "koku": 60
+              "koku": 60,
+              "kaori": 41
             }
           }
         }
@@ -11142,7 +11368,8 @@
           "naiyo": 41,
           "koi": 80,
           "kire": 84,
-          "koku": 67
+          "koku": 67,
+          "kaori": 76
         }
       },
       "lots": [
@@ -11158,7 +11385,8 @@
               "naiyo": 41,
               "koi": 81,
               "kire": 87,
-              "koku": 75
+              "koku": 75,
+              "kaori": 80
             }
           }
         }
@@ -11200,7 +11428,8 @@
           "naiyo": 67,
           "koi": 48,
           "kire": 40,
-          "koku": 51
+          "koku": 51,
+          "kaori": 57
         }
       },
       "lots": [
@@ -11216,7 +11445,8 @@
               "naiyo": 63,
               "koi": 42,
               "kire": 45,
-              "koku": 58
+              "koku": 58,
+              "kaori": 52
             }
           }
         }
@@ -11258,7 +11488,8 @@
           "naiyo": 72,
           "koi": 63,
           "kire": 67,
-          "koku": 65
+          "koku": 65,
+          "kaori": 47
         }
       },
       "lots": [
@@ -11274,7 +11505,8 @@
               "naiyo": 76,
               "koi": 56,
               "kire": 67,
-              "koku": 72
+              "koku": 72,
+              "kaori": 40
             }
           }
         }
@@ -11316,7 +11548,8 @@
           "naiyo": 45,
           "koi": 81,
           "kire": 45,
-          "koku": 55
+          "koku": 55,
+          "kaori": 83
         }
       },
       "lots": [
@@ -11332,7 +11565,8 @@
               "naiyo": 51,
               "koi": 85,
               "kire": 48,
-              "koku": 58
+              "koku": 58,
+              "kaori": 85
             }
           }
         }
@@ -11374,7 +11608,8 @@
           "naiyo": 81,
           "koi": 88,
           "kire": 75,
-          "koku": 76
+          "koku": 76,
+          "kaori": 60
         }
       },
       "lots": [
@@ -11390,7 +11625,8 @@
               "naiyo": 87,
               "koi": 96,
               "kire": 74,
-              "koku": 69
+              "koku": 69,
+              "kaori": 57
             }
           }
         }
@@ -11432,7 +11668,8 @@
           "naiyo": 72,
           "koi": 69,
           "kire": 71,
-          "koku": 68
+          "koku": 68,
+          "kaori": 71
         }
       },
       "lots": [
@@ -11448,7 +11685,8 @@
               "naiyo": 75,
               "koi": 61,
               "kire": 67,
-              "koku": 74
+              "koku": 74,
+              "kaori": 70
             }
           }
         }
@@ -11490,7 +11728,8 @@
           "naiyo": 70,
           "koi": 78,
           "kire": 50,
-          "koku": 50
+          "koku": 50,
+          "kaori": 64
         }
       },
       "lots": [
@@ -11506,7 +11745,8 @@
               "naiyo": 73,
               "koi": 76,
               "kire": 51,
-              "koku": 49
+              "koku": 49,
+              "kaori": 60
             }
           }
         }
@@ -11548,7 +11788,8 @@
           "naiyo": 88,
           "koi": 55,
           "kire": 64,
-          "koku": 77
+          "koku": 77,
+          "kaori": 49
         }
       },
       "lots": [
@@ -11564,7 +11805,8 @@
               "naiyo": 89,
               "koi": 48,
               "kire": 69,
-              "koku": 83
+              "koku": 83,
+              "kaori": 55
             }
           }
         }
@@ -11606,7 +11848,8 @@
           "naiyo": 43,
           "koi": 55,
           "kire": 87,
-          "koku": 66
+          "koku": 66,
+          "kaori": 53
         }
       },
       "lots": [
@@ -11622,7 +11865,8 @@
               "naiyo": 42,
               "koi": 58,
               "kire": 94,
-              "koku": 58
+              "koku": 58,
+              "kaori": 48
             }
           }
         }
@@ -11664,7 +11908,8 @@
           "naiyo": 52,
           "koi": 45,
           "kire": 75,
-          "koku": 47
+          "koku": 47,
+          "kaori": 49
         }
       },
       "lots": [
@@ -11680,7 +11925,8 @@
               "naiyo": 55,
               "koi": 45,
               "kire": 82,
-              "koku": 44
+              "koku": 44,
+              "kaori": 50
             }
           }
         }
@@ -11722,7 +11968,8 @@
           "naiyo": 57,
           "koi": 67,
           "kire": 68,
-          "koku": 52
+          "koku": 52,
+          "kaori": 41
         }
       },
       "lots": [
@@ -11738,7 +11985,8 @@
               "naiyo": 64,
               "koi": 60,
               "kire": 68,
-              "koku": 45
+              "koku": 45,
+              "kaori": 43
             }
           }
         }
@@ -11780,7 +12028,8 @@
           "naiyo": 51,
           "koi": 53,
           "kire": 63,
-          "koku": 44
+          "koku": 44,
+          "kaori": 69
         }
       },
       "lots": [
@@ -11796,7 +12045,8 @@
               "naiyo": 51,
               "koi": 50,
               "kire": 66,
-              "koku": 42
+              "koku": 42,
+              "kaori": 64
             }
           }
         }
@@ -11838,7 +12088,8 @@
           "naiyo": 61,
           "koi": 64,
           "kire": 86,
-          "koku": 51
+          "koku": 51,
+          "kaori": 68
         }
       },
       "lots": [
@@ -11854,7 +12105,8 @@
               "naiyo": 59,
               "koi": 68,
               "kire": 83,
-              "koku": 47
+              "koku": 47,
+              "kaori": 63
             }
           }
         }
@@ -11896,7 +12148,8 @@
           "naiyo": 70,
           "koi": 67,
           "kire": 60,
-          "koku": 84
+          "koku": 84,
+          "kaori": 57
         }
       },
       "lots": [
@@ -11912,7 +12165,8 @@
               "naiyo": 73,
               "koi": 66,
               "kire": 55,
-              "koku": 88
+              "koku": 88,
+              "kaori": 50
             }
           }
         }
@@ -11954,7 +12208,8 @@
           "naiyo": 87,
           "koi": 56,
           "kire": 64,
-          "koku": 70
+          "koku": 70,
+          "kaori": 75
         }
       },
       "lots": [
@@ -11970,7 +12225,8 @@
               "naiyo": 91,
               "koi": 60,
               "kire": 57,
-              "koku": 73
+              "koku": 73,
+              "kaori": 69
             }
           }
         }
@@ -12012,7 +12268,8 @@
           "naiyo": 74,
           "koi": 50,
           "kire": 58,
-          "koku": 71
+          "koku": 71,
+          "kaori": 42
         }
       },
       "lots": [
@@ -12028,7 +12285,8 @@
               "naiyo": 69,
               "koi": 47,
               "kire": 60,
-              "koku": 67
+              "koku": 67,
+              "kaori": 41
             }
           }
         }
@@ -12070,7 +12328,8 @@
           "naiyo": 80,
           "koi": 66,
           "kire": 75,
-          "koku": 56
+          "koku": 56,
+          "kaori": 47
         }
       },
       "lots": [
@@ -12086,7 +12345,8 @@
               "naiyo": 73,
               "koi": 69,
               "kire": 78,
-              "koku": 55
+              "koku": 55,
+              "kaori": 47
             }
           }
         }

@@ -52,9 +52,9 @@ export function tasteChainHtml(): string {
   return `<p class="chain" role="img" aria-label="味の輪：${label}">${TASTE_RING.map(tasteChip).join(arrow)}${arrow}<span class="chain-loop">${TASTE_RING[0]}へ戻る</span></p>`;
 }
 
-/** 相手チームの並び（棚板の上に立つ）。左が先頭。 */
-export function foeStageHtml(members: Member[]): string {
-  return `<ol class="foe-stage" aria-label="あいてのチーム（左が先頭）">${members
+/** 相手チームの並び（棚板の上に立つ）。自動の試合では左が先頭。 */
+export function foeStageHtml(members: Member[], front = true): string {
+  return `<ol class="foe-stage" aria-label="あいてのチーム${front ? "（左が先頭）" : ""}">${members
     .map((m) => {
       const c = characterOf(m.jan, m.lotSeed, m.profile);
       return `<li class="foe"><span class="thumb">${characterSvg(c)}</span><span class="foe-name">${c.spec.name}</span>${tasteChip(c.spec.taste)}</li>`;

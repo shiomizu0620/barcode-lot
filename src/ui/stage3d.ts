@@ -4,6 +4,7 @@
 // 重いので、バトル画面を開いたときだけ読み込む（battle-live.ts の import()）。
 
 import {
+  BackSide,
   BoxGeometry,
   BufferAttribute,
   type BufferGeometry,
@@ -28,13 +29,14 @@ import {
   RepeatWrapping,
   RingGeometry,
   Scene,
+  SphereGeometry,
   SRGBColorSpace,
   Vector3,
   WebGLRenderer,
   type Material,
 } from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import type { LiveFighter } from "../core/live";
+import type { Kind, LiveFighter } from "../core/live";
 import { GROUND, VIEW } from "../art/render";
 import { reducedMotion } from "./dom";
 import { characterSvg } from "./parts";
@@ -46,19 +48,18 @@ const SALE = "#e63b2e";
 
 type Power = "strong" | "weak" | "even" | "move";
 
-// ---- 置き場所（0＝こちら＝手前、1＝あいて＝奥） ----
-const SPOTS: Record<0 | 1, { front: Vector3; left: Vector3; right: Vector3 }> = {
-  0: { front: new Vector3(0, 0, 1.9), left: new Vector3(-1.1, 0, 2.5), right: new Vector3(1.1, 0, 2.5) },
-  1: { front: new Vector3(0, 0, -1.5), left: new Vector3(-1.75, 0, -2.75), right: new Vector3(1.75, 0, -2.75) },
+// ---- 置き場所（0＝こちら＝手前、1＝あいて＝奥）。先頭はなく、3体が横に並ぶ（真ん中は少し前） ----
+const SPOTS: Record<0 | 1, Vector3[]> = {
+  0: [new Vector3(-1.3, 0, 2.45), new Vector3(0, 0, 2.2), new Vector3(1.3, 0, 2.45)],
+  1: [new Vector3(-1.65, 0, -2.2), new Vector3(0, 0, -2.0), new Vector3(1.65, 0, -2.2)],
 };
 const ART = 1.75; // 絵の板の大きさ（余白込み）
-const SUPPORT = 0.84; // こちらの後ろの2体の大きさ。カメラに近いぶん大きく見えて、先頭を隠してしまうので少し小さくする
+const MINE = 0.86; // こちらの3体の大きさ。カメラに近いぶん大きく見えて、横どうしが重なるので少し小さくする
 const TEX = 512;
 const MARGIN = 30; // シールのふち用の余白（テクスチャのpx）
 
 const easeOut = (k: number) => 1 - Math.pow(1 - k, 3);
 const easeInOut = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
-const backOut = (k: number) => 1 + 2.4 * Math.pow(k - 1, 3) + 1.4 * Math.pow(k - 1, 2);
 
 /** キャラの絵をシールにしたテクスチャ（白いふち＋薄い黒の外線）。 */
 async function stickerTexture(svg: string): Promise<CanvasTexture> {
@@ -155,9 +156,6 @@ interface Rig {
   shadow: Mesh;
   warn: Mesh; // あいてのため中の「！」
   home: Vector3;
-  from: Vector3;
-  to: Vector3;
-  moveT0: number;
   off: Vector3; // 体当たり・のけぞりのずれ
   squash: [number, number];
   tilt: number;
@@ -170,9 +168,14 @@ interface Rig {
 }
 
 export interface Stage {
-  arrange(side: 0 | 1, front: number, animate?: boolean): void;
   windup(side: 0 | 1, slot: number, target: number): void;
-  hit(side: 0 | 1, slot: number, target: number, power: Power, color: string, onImpact: (x: number, y: number) => void): void;
+  /** からだは体当たり、あじは味のしぶきが飛んでいく。当たった瞬間に onImpact（画面の座標）。 */
+  hit(side: 0 | 1, slot: number, target: number, kind: Kind, power: Power, color: string, onImpact: (x: number, y: number) => void): void;
+  /** こちらがねらう相手の足もとに輪を出す（null で消す）。 */
+  aim(target: number | null): void;
+  wipe(side: 0 | 1, slot: number): void;
+  /** その子の体の真ん中が、画面のどこにあるか。 */
+  where(side: 0 | 1, slot: number): { x: number; y: number };
   down(side: 0 | 1, slot: number): void;
   cheer(side: 0 | 1): void;
   /** 試合が終わった。動きが落ち着いたら描くのを止める。 */
@@ -181,7 +184,7 @@ export interface Stage {
 }
 
 /** 舞台を作る。WebGLが使えなければ例外を投げる（呼ぶ側で2Dに戻す）。 */
-export async function createStage(host: HTMLElement, fighters: LiveFighter[][], front: [number, number]): Promise<Stage> {
+export async function createStage(host: HTMLElement, fighters: LiveFighter[][]): Promise<Stage> {
   const calm = reducedMotion();
   const renderer = new WebGLRenderer({ antialias: true, alpha: false, powerPreference: "low-power" });
   // 細かさは最大1.5倍まで（2倍だと描く点の数が1.8倍になり、安いスマホで重い）。遅ければ下で1倍に下げる
@@ -289,7 +292,7 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
   pop.position.set(0, 2.95, -5.1);
   scene.add(pop);
 
-  // ---- 印（先頭の台、ため中の輪） ----
+  // ---- 印（ねらう輪、ため中の「！」） ----
   const shadowTex = canvasTexture(128, 128, (g) => {
     const r = g.createRadialGradient(64, 64, 4, 64, 64, 62);
     r.addColorStop(0, "rgba(29,29,34,.34)");
@@ -311,16 +314,18 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
     g.textBaseline = "middle";
     g.fillText("！", 66, 70);
   });
-  const pads = ([0, 1] as const).map((side) => {
+  const aimRing = (() => {
     const g = new Group();
-    const ring = new Mesh(new RingGeometry(0.52, 0.68, 40), new MeshBasicMaterial({ color: side === 0 ? POP : "#ffffff", transparent: true, opacity: 0.95 }));
-    const edge = new Mesh(new RingGeometry(0.68, 0.73, 40), new MeshBasicMaterial({ color: INK }));
+    const ring = new Mesh(new RingGeometry(0.56, 0.74, 40), new MeshBasicMaterial({ color: SALE, transparent: true, opacity: 0.95 }));
+    const edge = new Mesh(new RingGeometry(0.74, 0.79, 40), new MeshBasicMaterial({ color: INK }));
     ring.rotation.x = edge.rotation.x = -Math.PI / 2;
     ring.position.y = edge.position.y = 0.01;
     g.add(ring, edge);
+    g.visible = false;
+    g.userData.target = null;
     scene.add(g);
     return g;
-  });
+  })();
 
   // ---- キャラ ----
   const disposables: { dispose(): void }[] = [];
@@ -351,7 +356,7 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
       const home = new Vector3();
       return {
         side: f.side as 0 | 1, slot: f.slot, root, art, mat, shadow, warn,
-        home, from: home.clone(), to: home.clone(), moveT0: -1,
+        home,
         off: new Vector3(), squash: [1, 1] as [number, number], tilt: 0, lift: 0, flash: 0, down: 0,
         phase: f.slot * 1.9 + f.side * 0.7, clip: null, hurt: null,
       };
@@ -394,6 +399,20 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
     if (shardMesh.instanceColor) shardMesh.instanceColor.needsUpdate = true;
   }
 
+  // ---- 味のしぶき（使い回す） ----
+  const dropGeo = new SphereGeometry(0.17, 14, 10);
+  const drops = Array.from({ length: 8 }, () => {
+    const m = new Mesh(dropGeo, new MeshBasicMaterial({ color: "#ffffff" }));
+    const rim = new Mesh(dropGeo, new MeshBasicMaterial({ color: INK, side: BackSide })); // 裏面だけ少し大きく描いて、ふちの線にする
+    rim.scale.setScalar(1.22);
+    m.add(rim);
+    m.visible = false;
+    m.renderOrder = 4;
+    scene.add(m);
+    return { m, from: new Vector3(), to: new Vector3(), t0: 0, dur: 1, big: false, alive: false };
+  });
+  let dropAt = 0;
+
   // ---- 時計（当たった瞬間に少し止める） ----
   let clock = 0; // 演出の時刻（ms）。止めている間は進まない
   let freeze = 0;
@@ -406,31 +425,12 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
   let zoom = 0;
   const lean = new Vector3();
 
-  const spotOf = (side: 0 | 1, slot: number, frontSlot: number) => {
-    const sp = SPOTS[side];
-    if (slot === frontSlot) return sp.front;
-    const rest = [0, 1, 2].filter((s) => s !== frontSlot);
-    return slot === rest[0] ? sp.left : sp.right;
-  };
-
-  function arrange(side: 0 | 1, frontSlot: number, animate = true) {
-    for (const r of rigs[side]) {
-      const to = spotOf(side, r.slot, frontSlot);
-      if (!animate || calm) {
-        r.home.copy(to);
-        r.from.copy(to);
-        r.to.copy(to);
-        r.moveT0 = -1;
-      } else {
-        r.from.copy(r.home);
-        r.to.copy(to);
-        r.moveT0 = clock;
-      }
+  for (const team of rigs) {
+    for (const r of team) {
+      const at = SPOTS[r.side][r.slot] ?? SPOTS[r.side][1];
+      r.home.copy(at);
     }
-    pads[side].userData.front = frontSlot;
   }
-  arrange(0, front[0], false);
-  arrange(1, front[1], false);
 
   const dirTo = (a: Rig, b: Rig) => {
     const d = b.home.clone().sub(a.home);
@@ -440,7 +440,6 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
   };
 
   const stage: Stage = {
-    arrange,
     windup(side, slot, target) {
       const a = rigs[side][slot], t = rigs[1 - side][target];
       if (!a || !t) return;
@@ -457,18 +456,19 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
         },
       };
     },
-    hit(side, slot, target, power, color, onImpact) {
+    hit(side, slot, target, kind, power, color, onImpact) {
       const a = rigs[side][slot], t = rigs[1 - side][target];
       if (!a || !t) return;
       a.warn.visible = false;
       const { d, len } = dirTo(a, t);
-      // 相手まで走り込むのは先頭だけ。後ろの2体は短く踏み込む（援護）。
-      // 全員が相手の先頭まで走ると、真ん中で3〜4体が重なって何が起きているか分からなくなるため
-      const isFront = pads[side].userData.front === slot;
-      const reach = isFront ? Math.max(0.6, len - 1.35) : Math.min(0.85, len * 0.25);
       const big = power === "move";
+      // 相手まで走り込むのは、からだの技だけ。ふつうの体当たりは途中まで踏み込む。
+      // 全員が相手まで走ると、真ん中で3〜4体が重なって何が起きているか分からなくなるため。
+      // あじは、その場で体をしぼってしぶきを飛ばす
+      const reach = kind === "aji" ? 0.22 : big ? Math.max(0.6, len - 1.35) : Math.min(1.1, len * 0.3);
       const dur = big ? 520 : 300;
       const HIT = 0.34;
+      const flight = kind === "aji" ? (big ? 380 : 270) : 0;
       const impact = () => {
         const p = t.root.position.clone().add(new Vector3(0, ART * 0.42, 0));
         spray(p, d, color, power);
@@ -494,6 +494,17 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
       if (calm) {
         impact();
         return;
+      }
+      if (kind === "aji") {
+        const dr = drops[dropAt++ % drops.length];
+        dr.alive = true;
+        (dr.m.material as MeshBasicMaterial).color.set(color);
+        dr.from.copy(a.home).add(new Vector3(0, ART * 0.45, 0)).addScaledVector(d, 0.4);
+        dr.to.copy(t.home).add(new Vector3(0, ART * 0.42, 0));
+        dr.t0 = clock + dur * HIT;
+        dr.dur = flight;
+        dr.big = big;
+        dr.m.position.copy(dr.from);
       }
       a.clip = {
         t0: clock, dur,
@@ -522,7 +533,26 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
           a.lift = 0;
         },
       };
-      after(dur * HIT, impact);
+      after(dur * HIT + flight, impact);
+    },
+    aim(target) {
+      aimRing.userData.target = target;
+    },
+    wipe(side, slot) {
+      const r = rigs[side][slot];
+      if (!r || calm) return;
+      r.flash = 0.6;
+      r.hurt = {
+        t0: clock, dur: 320,
+        run: (k, rr) => {
+          rr.tilt = Math.sin(k * Math.PI * 3) * 0.14 * (1 - k);
+        },
+      };
+    },
+    where(side, slot) {
+      const r = rigs[side][slot];
+      if (!r) return { x: 0, y: 0 };
+      return project(new Vector3(r.home.x, ART * 0.42, r.home.z));
     },
     down(side, slot) {
       const r = rigs[side][slot];
@@ -591,7 +621,7 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
     camera.aspect = w / h;
     // こちらの後ろの2体（いちばん手前で左右に広い）が、左右からはみ出さない広さにする
     const fwd = LOOK.clone().sub(CAM).normalize();
-    const back = SPOTS[0].left;
+    const back = SPOTS[0][0];
     const depth = new Vector3(back.x, ART * 0.4, back.z).sub(CAM).dot(fwd);
     const half = Math.abs(back.x) + ART * 0.5 + 0.12;
     const fitH = 2 * Math.atan(Math.tan(Math.atan(half / depth)) / camera.aspect) * (180 / Math.PI);
@@ -608,11 +638,12 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
   let skip = false; // 静かなときは1つおきに描く
   let slowFrames = 0;
   const camTarget = new Vector3();
-  /** 動いているもの（体当たり・入れ替え・破片・揺れ・止め・これからの出来事・シールが出てくる途中）があるか。 */
+  /** 動いているもの（体当たり・しぶき・破片・揺れ・止め・これからの出来事・シールが出てくる途中）があるか。 */
   const busy = () =>
     freeze > 0 || quake > 0.002 || zoom > 0.002 || lean.lengthSq() > 1e-4 || timers.length > 0 ||
     shards.some((x) => x.alive) ||
-    rigs.some((team) => team.some((r) => r.clip || r.hurt || r.moveT0 >= 0 || r.flash > 0 || (r.mat.map && r.mat.opacity < 1)));
+    drops.some((x) => x.alive) ||
+    rigs.some((team) => team.some((r) => r.clip || r.hurt || r.flash > 0 || (r.mat.map && r.mat.opacity < 1)));
   function frame(now: number) {
     raf = requestAnimationFrame(frame);
     const gap = now - lastReal;
@@ -650,12 +681,6 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
 
     for (const team of rigs) {
       for (const r of team) {
-        // 位置の入れ替え
-        if (r.moveT0 >= 0) {
-          const k = Math.min(1, (clock - r.moveT0) / 340);
-          r.home.lerpVectors(r.from, r.to, backOut(k));
-          if (k >= 1) r.moveT0 = -1;
-        }
         r.off.set(0, 0, 0);
         r.squash = [1, 1];
         r.tilt = 0;
@@ -677,9 +702,7 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
         // 倒れる：後ろに寝る
         r.art.rotation.set(-r.down * 1.35, 0, r.tilt);
         const breathe = alive && !calm ? 1 + Math.sin(sec * 2.6 + r.phase + 1) * 0.015 : 1;
-        // こちらの後ろの2体は少し小さく（入れ替えの途中は、近いほうの大きさへなめらかに）
-        const toFront = r.side === 0 ? Math.max(0, Math.min(1, (SPOTS[0].left.z - r.home.z) / (SPOTS[0].left.z - SPOTS[0].front.z))) : 1;
-        const size = SUPPORT + (1 - SUPPORT) * toFront;
+        const size = r.side === 0 ? MINE : 1;
         r.art.scale.set(r.squash[0] * breathe * size, (r.squash[1] / breathe) * size, 1);
         // 板はカメラのほうを向く（横回転だけ）
         r.root.rotation.y = Math.atan2(camera.position.x - r.root.position.x, camera.position.z - r.root.position.z);
@@ -694,11 +717,27 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][], 
       }
     }
 
-    // 先頭の台
-    for (const side of [0, 1] as const) {
-      const fr = rigs[side][pads[side].userData.front as number];
-      pads[side].visible = !!fr && fr.down < 1;
-      if (fr) pads[side].position.set(fr.home.x, 0, fr.home.z);
+    // ねらう輪：ねらっている相手の足もと
+    const aimed = aimRing.userData.target === null ? null : rigs[1][aimRing.userData.target as number];
+    aimRing.visible = !!aimed && aimed.down < 1;
+    if (aimed) {
+      aimRing.position.set(aimed.home.x, 0, aimed.home.z);
+      aimRing.scale.setScalar(1 + (calm ? 0 : Math.sin(sec * 6) * 0.04));
+    }
+
+    // 味のしぶき：山なりに飛んで、着いたら消える（当たりは hit の impact が出す）
+    for (const dr of drops) {
+      if (!dr.alive) continue;
+      const k = (clock - dr.t0) / dr.dur;
+      dr.m.visible = k >= 0 && k < 1;
+      if (k < 0) continue;
+      if (k >= 1) {
+        dr.alive = false;
+        continue;
+      }
+      dr.m.position.lerpVectors(dr.from, dr.to, k);
+      dr.m.position.y += Math.sin(Math.PI * k) * (dr.big ? 0.9 : 0.55);
+      dr.m.scale.setScalar((dr.big ? 1.6 : 1) * (0.6 + 0.4 * Math.min(1, k * 3)));
     }
 
     // 縞の破片

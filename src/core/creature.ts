@@ -89,11 +89,14 @@ export interface Stats {
   koi: number; // 濃さ
   kire: number; // キレ
   koku: number; // コク
+  kaori: number; // 香り（あじ攻撃の強さ。2026-11-26 に足した）
 }
 
+// 値札に並べる順（乱数を引く順とは別）
 export const STAT_LABEL: Record<keyof Stats, string> = {
   naiyo: "内容量",
   koi: "濃さ",
+  kaori: "香り",
   kire: "キレ",
   koku: "コク",
 };
@@ -152,6 +155,7 @@ export function specFor(jan: string, profile?: ProductProfile): Spec {
       koi: r.int(40, 88),
       kire: r.int(40, 88),
       koku: r.int(40, 88),
+      kaori: r.int(40, 88), // 最後に引く。前に入れると、ほかの部位や能力の値がずれる
     },
   };
 }
@@ -181,6 +185,7 @@ export function lotLook(spec: Spec, lotSeed: string): LotLook {
       koi: clamp(spec.base.koi + d()),
       kire: clamp(spec.base.kire + d()),
       koku: clamp(spec.base.koku + d()),
+      kaori: clamp(spec.base.kaori + d()), // 最後に引く
     },
   };
 }

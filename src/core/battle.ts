@@ -78,9 +78,10 @@ export interface Fighter {
   look: LotLook;
   maxHp: number;
   hp: number;
-  atk: number;
-  def: number;
-  spd: number;
+  atk: number; // 濃さ（からだ攻撃）
+  spa: number; // 香り（あじ攻撃）
+  def: number; // コク（守り）
+  spd: number; // キレ（素早さ）
 }
 
 export type BattleEvent =
@@ -101,7 +102,7 @@ function makeFighter(m: Member, side: 0 | 1, slot: number): Fighter {
   const spec = specFor(m.jan, m.profile);
   const look = lotLook(spec, m.lotSeed);
   const hp = look.stats.naiyo * TUNE.hpPerNaiyo;
-  return { side, slot, spec, look, maxHp: hp, hp, atk: look.stats.koi, def: look.stats.koku, spd: look.stats.kire };
+  return { side, slot, spec, look, maxHp: hp, hp, atk: look.stats.koi, spa: look.stats.kaori, def: look.stats.koku, spd: look.stats.kire };
 }
 
 /** チームの味（Flavor.id）の並びから、成立する組み合わせ技を返す。画面の予告用。 */

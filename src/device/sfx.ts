@@ -92,6 +92,24 @@ export const sfx = {
       buzz(18);
     }
   },
+  /** あじ攻撃：しぶきが飛ぶ。 */
+  splash() {
+    if (once("splash", 90)) tone(1100, 0.08, 0, "sine", 0.04, 520);
+  },
+  /** 効き目が付いた。 */
+  stain() {
+    if (once("stain", 150)) tone(240, 0.12, 0, "triangle", 0.04, 180);
+  },
+  heal() {
+    if (once("heal", 150)) [1319, 1760].forEach((f, i) => tone(f, 0.07, i * 0.06, "sine", 0.04));
+  },
+  wipe() {
+    tone(900, 0.12, 0, "triangle", 0.04, 1800);
+    tone(1500, 0.06, 0.1, "sine", 0.03);
+  },
+  aim() {
+    tone(1760, 0.04, 0, "square", 0.03);
+  },
   move() {
     [880, 1175, 1568].forEach((f, i) => tone(f, 0.07, i * 0.05, "square", 0.06));
     tone(70, 0.3, 0.12, "sawtooth", 0.07, 40);

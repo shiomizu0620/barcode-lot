@@ -13,7 +13,7 @@ import { navigate, type View } from "../router";
 import { openShareSheet } from "../share-image";
 
 // 能力がバトルで何になるか
-const STAT_ROLE: Record<keyof Stats, string> = { naiyo: "体力", koi: "攻撃", kire: "素早さ", koku: "守り" };
+const STAT_ROLE: Record<keyof Stats, string> = { naiyo: "体力", koi: "からだ攻撃", kaori: "あじ攻撃", kire: "素早さ", koku: "守り" };
 
 function statusText(res: ScanResult): string {
   if (!res.isNew) return "前と同じロットです";

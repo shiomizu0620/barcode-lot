@@ -1,4 +1,4 @@
-// バトルの手応え（見た目だけ）。体当たり・縞のはじけ・数字・揺れ・帯・値札。
+// バトルの手応え（見た目だけ）。体当たり・縞のはじけ・数字・効き目の文字・揺れ・帯・値札。
 // battle-feel ブランチで作った演出を、同時に何体も動く試合でも重ならないよう短くして移した。
 // 勝敗や数値はここでは決めない。動きを減らす設定の端末では、どれも何もしない。
 
@@ -72,6 +72,29 @@ export function damagePop(layer: HTMLElement, x: number, y: number, dmg: number,
   ).then(() => el.remove());
 }
 
+/** 数字以外の小さな文字（効き目・回復・ひりひり・ふいた）。color は効き目の色。 */
+export function popText(layer: HTMLElement, x: number, y: number, text: string, kind: "effect" | "heal" | "burn" | "wipe", color = "") {
+  if (reducedMotion()) return;
+  const el = document.createElement("span");
+  el.className = "pop";
+  el.dataset.kind = kind;
+  if (color) el.style.setProperty("--c", color);
+  el.textContent = text;
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+  layer.appendChild(el);
+  void play(
+    el,
+    [
+      { transform: "translate(-50%,-50%) scale(.5)", opacity: 0 },
+      { transform: "translate(-50%,-80%) scale(1.1)", opacity: 1, offset: 0.2 },
+      { transform: "translate(-50%,-100%) scale(1)", opacity: 1, offset: 0.7 },
+      { transform: "translate(-50%,-140%) scale(1)", opacity: 0 },
+    ],
+    kind === "effect" ? 1000 : 750,
+  ).then(() => el.remove());
+}
+
 /** 場が揺れる。 */
 export function shake(el: HTMLElement, k: number, ms: number) {
   void play(
@@ -104,7 +127,7 @@ export async function cutin(layer: HTMLElement, text: string, tone = "") {
   el.remove();
 }
 
-/** 真ん中に出る値札（技名、飲み干された、前へ）。新しいものが来たら入れ替わる。 */
+/** 真ん中に出る値札（技名、飲み干された）。新しいものが来たら入れ替わる。 */
 export function callout(host: HTMLElement, main: string, sub = "", tone = "", side: number | null = null) {
   host.innerHTML = "";
   const el = document.createElement("div");

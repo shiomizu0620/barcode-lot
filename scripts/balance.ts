@@ -28,25 +28,24 @@ const idle: Player = () => [];
 /** 技がたまったらすぐ押すだけ。 */
 const masher: Player = (s) => s.fighters[0].filter((f) => alive(f) && f.gauge >= LIVE.gaugeMax).map((f) => ({ side: 0, t: "move", slot: f.slot }));
 
-/** 上手い人：ためを見て、効きにくい体で受ける。技は相手の先頭に効くときに押す。 */
+/** 上手い人：相性が良くて減っている相手をねらい、効き目はすぐ拭き、技はねらった相手に効くときに押す。 */
 const skilled: Player = (s) => {
   const out: LiveInput[] = [];
-  const mine = s.fighters[0];
-  const foeFront = s.fighters[1][s.front[1]];
+  const mine = s.fighters[0].filter(alive);
+  const foes = s.fighters[1].filter(alive);
+  if (!foes.length) return out;
+  // ねらう：こちら全員から見た相性の合計 × 減り具合
+  const value = (t: LiveFighter) => mine.reduce((a, f) => a + mult(matchup(f.spec.taste, t.spec.taste)), 0) * (2 - t.hp / t.maxHp);
+  const best = foes.sort((a, b) => value(b) - value(a))[0];
+  if (s.aim[0] !== best.slot) out.push({ side: 0, t: "aim", slot: best.slot });
   for (const f of mine) {
-    if (alive(f) && f.gauge >= LIVE.gaugeMax && matchup(f.spec.taste, foeFront.spec.taste) !== "weak") out.push({ side: 0, t: "move", slot: f.slot });
+    if (f.gauge >= LIVE.gaugeMax && matchup(f.spec.taste, best.spec.taste) !== "weak") out.push({ side: 0, t: "move", slot: f.slot });
   }
-  if (s.swapWait[0] > 0) return out;
-  const winding = s.fighters[1].filter((e) => alive(e) && e.windup > 0);
-  // 受ける側の点：これから来る攻撃に効きにくく、残りが多いほど高い
-  const score = (f: LiveFighter) => {
-    const attackers = winding.length ? winding : s.fighters[1].filter(alive);
-    const incoming = attackers.reduce((a, e) => a + mult(matchup(e.spec.taste, f.spec.taste)), 0) / attackers.length;
-    return f.hp / f.maxHp - 0.6 * incoming;
-  };
-  const front = mine[s.front[0]];
-  const best = mine.filter(alive).sort((a, b) => score(b) - score(a))[0];
-  if (best && best !== front && score(best) - score(front) > 0.2) out.push({ side: 0, t: "front", slot: best.slot });
+  // 拭く：効き目がいちばん多い味方
+  if (s.wipeWait[0] === 0) {
+    const stained = mine.filter((f) => Object.keys(f.effects).length).sort((a, b) => Object.keys(b.effects).length - Object.keys(a.effects).length);
+    if (stained.length) out.push({ side: 0, t: "wipe", slot: stained[0].slot });
+  }
   return out;
 };
 

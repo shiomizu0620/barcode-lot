@@ -1,4 +1,4 @@
-// チーム選び：棚から3体えらぶ。えらんだ順に前に立つ。
+// チーム選び：棚から3体えらぶ。自動の試合（挑戦状）では、えらんだ順に前に立つ。手を出せる試合（今日の挑戦者）では左から並ぶだけ。
 // 戦う相手がいるとき（今日の挑戦者・挑戦状）と、挑戦状を送るだけのときの3通り。
 
 import { combosOf, matchup } from "../../core/battle";
@@ -28,6 +28,7 @@ export const battleTeamView: View = ({ root, params }) => {
   const need = Math.min(MAX_TEAM, lots.length);
   const cast = new Map<string, { lot: Lot; c: Character }>(lots.map((lot) => [keyOf(lot), { lot, c: characterOfLot(lot) }]));
   let picked = pickedLots().map(keyOf).slice(0, MAX_TEAM);
+  const live = mode === "daily"; // 手を出せる試合には先頭がない
   const foeTastes = opponent ? opponent.members.map((m) => specFor(m.jan, m.profile).taste) : [];
 
   const pickHtml = (key: string, { lot, c }: { lot: Lot; c: Character }) => {
@@ -53,8 +54,8 @@ export const battleTeamView: View = ({ root, params }) => {
     <section class="team">
       <a class="back" href="#/battle">バトルへ</a>
       <h1 class="page-title">${TITLE[mode]}</h1>
-      ${opponent ? `<p class="team-label">あいて（左が先頭）</p>${foeStageHtml(opponent.members)}` : ""}
-      <p class="team-label">${opponent ? "こちら：" : ""}えらんだ順に前に立つ${opponent ? `<span class="team-legend"><i class="edge" data-kind="strong">強</i>あいてに強い <i class="edge" data-kind="weak">弱</i>苦手</span>` : ""}</p>
+      ${opponent ? `<p class="team-label">${live ? "あいて" : "あいて（左が先頭）"}</p>${foeStageHtml(opponent.members, !live)}` : ""}
+      <p class="team-label">${opponent ? "こちら：" : ""}${live ? "3体えらぶ" : "えらんだ順に前に立つ"}${opponent ? `<span class="team-legend"><i class="edge" data-kind="strong">強</i>あいてに強い <i class="edge" data-kind="weak">弱</i>苦手</span>` : ""}</p>
       <ul class="shelf-list team-list">${[...cast].map(([key, v]) => pickHtml(key, v)).join("")}${blanks}</ul>
       ${opponent ? `<div class="aisho">${tasteChainHtml()}</div>` : ""}
       <div class="team-bar">
@@ -85,7 +86,7 @@ export const battleTeamView: View = ({ root, params }) => {
     });
     const ready = picked.length >= need;
     go.disabled = !ready;
-    go.textContent = !ready ? `あと${need - picked.length}体えらぶ` : mode === "send" ? "挑戦状を送る" : "この順番で戦う";
+    go.textContent = !ready ? `あと${need - picked.length}体えらぶ` : mode === "send" ? "挑戦状を送る" : live ? "このチームで戦う" : "この順番で戦う";
 
     // 組み合わせ技の予告
     const team = picked.map((k) => cast.get(k)!.c.spec);

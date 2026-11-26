@@ -237,7 +237,7 @@ body.morphing .tabs { translate: 0 110%; } /* 変身のあいだは引っ込め�
 .shelf-tag-next { display: block; font: 10.5px/1.5 var(--font-digits); color: var(--ink-soft); white-space: nowrap; }
 .shelf-tag-next[data-arrived="true"] { font: 700 11px/1.5 var(--font-body); color: var(--sale); }
 
-/* ---- 相手チーム：同じく棚板の上に並ぶ（左が先頭） ---- */
+/* ---- 相手チーム：同じく棚板の上に並ぶ（自動の試合では左が先頭） ---- */
 .foe-stage { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
 .foe { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
 .foe .thumb { border-bottom: 5px solid var(--ink); margin-bottom: 4px; }
