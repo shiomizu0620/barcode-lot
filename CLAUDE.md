@@ -33,6 +33,7 @@
 - `npm test` テスト（答え合わせ、バトル、ロット、層の決まり）
 - `npm run typecheck` 型チェック（画面側とWorker側）
 - `npm run check` 型チェック・テスト・ビルドをまとめて（作業の終わりに必ず通す。GitHub Actions も同じものを回す）
+- `npm run preview:upload` 本番を変えずに、今の手元の版を上げて確認用のURLを出す（スマホで確かめるとき）
 - `npm run balance` 手を出せる試合の釣り合い（何もしない人・技だけ押す人・上手い人の勝率と試合の長さ）
 - `npm run build` で `dist/`（相対パスなので、どこに置いても動く）
 - `npm run golden` 答え合わせ用データの作り直し（生成ルールを意図して変えたときだけ）

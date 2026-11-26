@@ -88,7 +88,7 @@ scripts/balance.ts    手を出せる試合の釣り合いを測る（npm run ba
 | `barcode-lot:profiles:v1` | localStorage | `{ 品番: { flavor?, source } }` |
 | `barcode-lot:daily:v1` | localStorage | `{ date, result }`（今日の挑戦者との結果） |
 | `barcode-lot:debug-offset` | localStorage | 試作用にすすめた時間（ミリ秒） |
-| `barcode-lot:stage` | localStorage | バトルを3Dで見るか（`3d` / `2d`。無ければ3D）。お試し |
+| `barcode-lot:stage` | localStorage | バトルを3Dで見るか（`3d` / `2d`。無ければ2D）。お試し |
 | `barcode-lot:letter` `…:letter-done` | sessionStorage | 届いた挑戦状と、もう戦ったか |
 | `barcode-lot:debug` | sessionStorage | 試作用の操作を出すか |
 | `sfx` | localStorage | 効果音を消したか（`off` / `on`） |
@@ -144,7 +144,8 @@ D1 は無料プランで使える。表を変えるときは `migrations/0002_�
 
 ### 確認用のURL
 - `main` への push → 本番 https://barcode-lot.shiomizu.workers.dev
-- それ以外のブランチ → プレビューURL。Cloudflare の Settings > Build > Branch control で Preview Builds を有効にする（**しおみずの作業**）。2026-11-17 時点では、ブランチの build は失敗している（ログは Cloudflare の管理画面でしか見られない）
+- それ以外のブランチ → プレビューURL。Cloudflare のブランチ用ビルドは、2026-11-12 の最初の1回から一度も成功していない（main のビルドは毎回成功）。手元から同じ `wrangler versions upload` を流すと通るので、コードではなく Cloudflare 側のビルドの設定（権限かコマンド）の問題。ログは Cloudflare の管理画面でしか見られない（**しおみずの作業**）
+- 直るまでの代わり：手元で `npm run preview:upload`。本番を変えずに版を1つ上げ、`https://<版のID>-barcode-lot.shiomizu.workers.dev` の確認用URLが出る
 
 ### 役割分担（Orca で指示役と実装役に分けるとき）
 **指示役がやること**

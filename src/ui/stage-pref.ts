@@ -1,12 +1,15 @@
 // 3Dの舞台で見るかどうか（お試しの切り替え）。three.js を読み込まずに使えるよう、stage3d.ts とは分けてある。
 
-/** 3Dで見るか（お試しの切り替え。端末に覚える）。 */
+/**
+ * 3Dで見るか（お試しの切り替え。端末に覚える）。
+ * 3Dを残すかはまだ決めていないので、最初は2Dで開き、試合の上の「3Dで見る」を押した端末だけ3Dにする。
+ */
 const PREF_KEY = "barcode-lot:stage";
 export function want3d(): boolean {
   try {
-    return localStorage.getItem(PREF_KEY) !== "2d";
+    return localStorage.getItem(PREF_KEY) === "3d";
   } catch {
-    return true;
+    return false;
   }
 }
 export function setWant3d(on: boolean) {
