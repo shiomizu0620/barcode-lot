@@ -3,7 +3,8 @@
 // 画面にも通信にも触れないので、あとで対戦用のサーバーでもそのまま動かせる。
 //
 // 決まり（くわしくは docs/battle-plan.md）：
-// - 3体とも自分の間隔（キレが高いほど短い）で攻撃する。攻撃の前に「ため」（0.8秒）があり、画面に見える
+// - 3体とも自分の間隔（キレが高いほど短い）がたまると、攻撃の列に並ぶ
+// - 攻撃は1つずつ。列の先頭の子が「ため」→ 当たる → ひと呼吸おいて、次の子。技は列に割り込む（ほかの技の後ろ）
 // - 攻撃は2種類。「からだ」（体当たり。濃さで強くなる）と「あじ」（味のしぶき。香りで強くなり、味ごとの効き目が付く）
 //   濃さが高い子は「からだ型」、香りが高い子は「あじ型」で、得意なほうをよく使う
 // - どちらの攻撃も、相手の誰にでも当たる（先頭はない）
@@ -19,8 +20,8 @@ import { Rng } from "./rng";
 export const LIVE = {
   tickMs: 200, // 1コマの長さ（ふつうの速さ）。倍速は画面側で半分にする。コマで数える決まりは速さで変わらない
   timeLimit: 600, // 2分で時間切れ（残りの量の割合で判定）
-  karadaScale: 0.27, // からだ攻撃の強さ（2026-11-26 に、攻撃をゆっくり・1発を重くした）
-  ajiScale: 0.21, // あじ攻撃の強さ（効き目が付くぶん弱め）
+  karadaScale: 0.45, // からだ攻撃の強さ（2026-11-26 に、攻撃を1つずつ・1発を重くした）
+  ajiScale: 0.35, // あじ攻撃の強さ（効き目が付くぶん弱め）
   defenseBase: 100, // 守り：ダメージ × base / (base + コク)
   strong: 1.5,
   weak: 0.75,
@@ -28,11 +29,13 @@ export const LIVE = {
   intervalBase: 30, // 攻撃の間隔（コマ）＝ base − キレ × perKire
   intervalPerKire: 0.16,
   windup: 4, // 攻撃の前の「ため」（0.8秒）
+  recover: 3, // 当たったあと、次の子が動き出すまでのひと呼吸（0.6秒）
+  moveRecover: 5, // 技のあとのひと呼吸（1秒。技名の値札を読む間）
   typeBias: 1.12, // 濃さと香りの片方がもう片方のこれ倍以上なら「型」になる
   typeShare: 0.75, // 型の子が、得意なほうの攻撃を選ぶ割合
   gaugeMax: 100,
-  gaugeOnAttack: 15,
-  gaugeOnHit: 7,
+  gaugeOnAttack: 20,
+  gaugeOnHit: 9,
   moveMult: 3, // 技の威力（ふつうの攻撃の何倍か）
   autoMove: 30, // 技のゲージが満タンのまま放っておくと、これだけたって勝手に出る（6秒）
   // 味ごとの効き目
@@ -92,8 +95,17 @@ interface CpuMind {
   wipeAt: number | null;
 }
 
+/** 攻撃の列に並んでいる1つ（move＝技）。 */
+export interface Act {
+  side: 0 | 1;
+  slot: number;
+  move: boolean;
+}
+
 export interface LiveState {
   tick: number;
+  queue: Act[]; // 攻撃の列（先頭から順に1つずつ）
+  act: (Act & { phase: "windup" | "recover"; left: number }) | null; // いま動いている1つ
   fighters: LiveFighter[][];
   aim: [number | null, number | null]; // 各チームが「ねらう」相手（slot）
   wipeWait: [number, number]; // 次に拭けるまでの残り（コマ）
@@ -158,7 +170,7 @@ export function createLive(teamA: Member[], teamB: Member[], seed: string, cpu: 
     }),
   );
   const mind = (side: 0 | 1): CpuMind | null => (cpu[side] ? { fireAt: live[side].map(() => null), wipeAt: null } : null);
-  return { tick: 0, fighters: live, aim: [null, null], wipeWait: [0, 0], winner: null, reason: null, setup: events, rng, cpu: [mind(0), mind(1)] };
+  return { tick: 0, queue: [], act: null, fighters: live, aim: [null, null], wipeWait: [0, 0], winner: null, reason: null, setup: events, rng, cpu: [mind(0), mind(1)] };
 }
 
 /** 1コマ進める。state を書き換え、このコマで起きたことを返す。 */
@@ -258,7 +270,14 @@ export function stepLive(state: LiveState, inputs: LiveInput[] = []): LiveEvent[
     checkDown(target, f.side);
   };
 
-  /** 技を出す（押したとき・放っておいて勝手に出るとき）。 */
+  /** 技を列に入れる。技どうしは押した順、ふつうの攻撃より前。 */
+  const queueMove = (f: LiveFighter) => {
+    if (moveQueued(state, f.side, f.slot)) return;
+    const at = state.queue.findIndex((q) => !q.move);
+    state.queue.splice(at < 0 ? state.queue.length : at, 0, { side: f.side, slot: f.slot, move: true });
+  };
+
+  /** 技を出す（列の順番が来たとき）。 */
   const fireMove = (f: LiveFighter) => {
     const target = pickTarget(f);
     f.gauge = 0;
@@ -290,55 +309,81 @@ export function stepLive(state: LiveState, inputs: LiveInput[] = []): LiveEvent[
       events.push({ t: "wipe", side: f.side, slot: f.slot });
       for (const e of had) events.push({ t: "effect", side: f.side, slot: f.slot, effect: e, on: false });
     } else if (f.gauge >= LIVE.gaugeMax) {
-      fireMove(f);
+      queueMove(f);
     }
   }
 
-  // 1') 満タンのまま放っておかれた技は、勝手に出る
+  // 1') 満タンのまま放っておかれた技は、勝手に列に入る
   for (const team of fighters) {
     for (const f of team) {
-      if (state.winner !== null) break;
-      if (alive(f) && f.fullAt !== null && state.tick - f.fullAt >= LIVE.autoMove) fireMove(f);
+      if (alive(f) && f.fullAt !== null && state.tick - f.fullAt >= LIVE.autoMove) queueMove(f);
     }
   }
 
-  // 2) ふつうの攻撃：ため → 当たる。同じコマに重なったら、キレの高い順
+  // 2) 間隔：列に並んでいない・動いていない子だけ進む。たまったら列の後ろへ（同じコマならキレの高い順）
   for (const side of [0, 1] as const) if (state.wipeWait[side] > 0) state.wipeWait[side]--;
+  const busy = (f: LiveFighter) =>
+    state.queue.some((q) => !q.move && q.side === f.side && q.slot === f.slot) ||
+    (state.act !== null && !state.act.move && state.act.side === f.side && state.act.slot === f.slot);
   const ready: { f: LiveFighter; k: number }[] = [];
   for (const team of fighters) {
     for (const f of team) {
-      if (!alive(f) || state.winner !== null) continue;
-      if (f.windup > 0) {
-        if (--f.windup === 0) ready.push({ f, k: f.spd + rng.next() });
-        continue;
-      }
+      if (!alive(f) || state.winner !== null || busy(f)) continue;
       // とろけていると、間隔の進みが遅い
       if (f.effects.toro) {
         f.slowAcc += 1 / LIVE.slowRate;
         if (f.slowAcc < 1) continue;
         f.slowAcc -= 1;
       }
-      if (--f.wait <= 0) {
-        const target = pickTarget(f);
-        if (target === null) continue;
-        f.windup = LIVE.windup;
-        f.windupKind = chooseKind(f);
-        f.windupTarget = target;
-        events.push({ t: "windup", side: f.side, slot: f.slot, target, kind: f.windupKind });
-      }
+      if (--f.wait <= 0) ready.push({ f, k: f.spd + rng.next() });
     }
   }
-  ready.sort((a, b) => b.k - a.k);
-  for (const { f } of ready) {
-    if (state.winner !== null) break;
+  ready.sort((x, y) => y.k - x.k);
+  for (const { f } of ready) state.queue.push({ side: f.side, slot: f.slot, move: false });
+
+  // 3) 舞台：攻撃は1つずつ。ため → 当たる → ひと呼吸 → 次の子
+  for (let guard = 0; guard < 12 && state.winner === null; guard++) {
+    const a = state.act;
+    if (a) {
+      const f = fighters[a.side][a.slot];
+      if (a.phase === "windup" && !alive(f)) {
+        state.act = null; // ためている間に倒れた
+        continue;
+      }
+      if (a.left > 0) a.left--;
+      if (a.phase === "windup") f.windup = a.left;
+      if (a.left > 0) break;
+      if (a.phase === "windup") {
+        // ためている間に相手が倒れていたら、ほかの子へ
+        const target = alive(fighters[1 - f.side][f.windupTarget]) ? f.windupTarget : pickTarget(f);
+        if (target !== null) strike(f, target, f.windupKind, false);
+        f.wait = Math.max(1, f.interval - LIVE.windup - LIVE.recover); // 動いていたぶんを引いて、間隔は変えない
+        state.act = { ...a, phase: "recover", left: LIVE.recover };
+        break;
+      }
+      state.act = null; // ひと呼吸おわり → 次の子
+    }
+    const next = state.queue.shift();
+    if (!next) break;
+    const f = fighters[next.side][next.slot];
     if (!alive(f)) continue;
-    f.wait = Math.max(1, f.interval - LIVE.windup); // ためのぶんを引いて、攻撃の間隔は変えない
-    // ためている間に相手が倒れていたら、ほかの子へ
-    const target = alive(fighters[1 - f.side][f.windupTarget]) ? f.windupTarget : pickTarget(f);
-    if (target !== null) strike(f, target, f.windupKind, false);
+    if (next.move) {
+      if (f.gauge < LIVE.gaugeMax) continue;
+      fireMove(f);
+      state.act = { ...next, phase: "recover", left: LIVE.moveRecover };
+      break;
+    }
+    const target = pickTarget(f);
+    if (target === null) continue;
+    f.windup = LIVE.windup;
+    f.windupKind = chooseKind(f);
+    f.windupTarget = target;
+    events.push({ t: "windup", side: f.side, slot: f.slot, target, kind: f.windupKind });
+    state.act = { ...next, phase: "windup", left: LIVE.windup };
+    break;
   }
 
-  // 3) 効き目：ひりひりで減る。時間がたつと消える
+  // 4) 効き目：ひりひりで減る。時間がたつと消える
   for (const team of fighters) {
     for (const f of team) {
       if (!alive(f) || state.winner !== null) continue;
@@ -357,13 +402,18 @@ export function stepLive(state: LiveState, inputs: LiveInput[] = []): LiveEvent[
     }
   }
 
-  // 4) 時間切れ：残りの量の割合で判定
+  // 5) 時間切れ：残りの量の割合で判定
   if (state.winner === null && state.tick >= LIVE.timeLimit) {
     const rate = (s: 0 | 1) => fighters[s].reduce((a, f) => a + f.hp / f.maxHp, 0);
     const a = rate(0), b = rate(1);
     finish(Math.abs(a - b) < 1e-9 ? -1 : a > b ? 0 : 1, "time");
   }
   return events;
+}
+
+/** この子の技が、列に入って順番を待っているか。 */
+export function moveQueued(state: LiveState, side: 0 | 1, slot: number): boolean {
+  return state.queue.some((q) => q.move && q.side === side && q.slot === slot);
 }
 
 /** 残りの量の合計（ml）。 */

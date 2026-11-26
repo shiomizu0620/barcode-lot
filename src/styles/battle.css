@@ -512,3 +512,11 @@ body.battle-done main { padding-bottom: 0; }
 .live .live-clock { order: 1; }
 .live .battle-top::after { content: ""; order: 2; flex-basis: 100%; }
 .live .battle-top .sound { order: 3; margin-left: 0; }
+/* 押した技は、今の攻撃が終わるまで「次に出る」 */
+.lf-move-wait { position: absolute; right: 3px; top: 2px; display: none; padding: 1px 4px; font: 700 9px/1.2 var(--font-body); font-style: normal; color: var(--ink); background: var(--pop); border: 1.5px solid var(--ink); border-radius: 2px; }
+.lf-move.is-queued { border-color: var(--ink); color: var(--white); }
+.lf-move.is-queued .lf-move-fill { background: var(--sale); }
+.lf-move.is-queued .lf-move-wait { display: block; }
+/* こちらの子がためているとき（いま動く子）は、頭の上に黄色い「！」 */
+.live-row[data-side="0"] .lf.is-winding .lf-warn { display: grid; color: var(--ink); background: var(--pop); }
+.sound.speed[aria-pressed="false"] { color: var(--ink); background: var(--white); border-color: var(--ink); }

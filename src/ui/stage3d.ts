@@ -444,7 +444,7 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][]):
     windup(side, slot, target, ms) {
       const a = rigs[side][slot], t = rigs[1 - side][target];
       if (!a || !t) return;
-      if (side === 1) a.warn.visible = true;
+      a.warn.visible = true; // いま動く子（攻撃は1つずつ）
       if (calm) return;
       const { d } = dirTo(a, t);
       a.clip = {

@@ -1,9 +1,10 @@
 // 手を出せる試合。計算は core/live.ts が0.1秒ごとに1コマ進め、ここは操作を渡して結果を映す。
+// 攻撃は1つずつ出る（core/live.ts の列）。押した技も、今の攻撃が終わってから出る。
 // できること：相手をタップして「ねらう」、効き目が付いた味方を「ふく」、ゲージがたまったら「技」。「倍速」で2倍の速さで見られる。
 // 手応え（ため・体当たり・しぶき・縞のはじけ・揺れ・効果音）は見た目だけで、勝敗や数値には関わらない。
 
 import { encodeTeam, matchup } from "../../core/battle";
-import { createLive, EFFECT_LABEL, EFFECT_OF, LIVE, remaining, stepLive, type Effect, type LiveEvent, type LiveFighter, type LiveInput, type Style } from "../../core/live";
+import { createLive, EFFECT_LABEL, EFFECT_OF, LIVE, moveQueued, remaining, stepLive, type Effect, type LiveEvent, type LiveFighter, type LiveInput, type Style } from "../../core/live";
 import type { Taste } from "../../core/creature";
 import { isMuted, setMuted, sfx, unlock } from "../../device/sfx";
 import { recordDaily } from "../../store/daily";
@@ -40,7 +41,7 @@ function fighterHtml(f: LiveFighter): string {
       mine
         ? `<div class="lf-keys">
              <button type="button" class="lf-wipe" disabled aria-label="${f.spec.name}をふく">ふく</button>
-             <button type="button" class="lf-move" disabled aria-label="${f.spec.name}の技「${f.spec.move}」"><span class="lf-move-fill"></span><b>${f.spec.move}</b></button>
+             <button type="button" class="lf-move" disabled aria-label="${f.spec.name}の技「${f.spec.move}」"><span class="lf-move-fill"></span><b>${f.spec.move}</b><i class="lf-move-wait" aria-hidden="true">次に出る</i></button>
            </div>`
         : `<div class="lf-charge" aria-hidden="true"><span></span></div>`
     }
@@ -209,8 +210,10 @@ export const battleLiveView: View = ({ root }) => {
         }
         if (c.move) {
           const ready = !down && f.gauge >= LIVE.gaugeMax && state.winner === null;
-          c.move.disabled = !ready;
-          c.move.classList.toggle("is-ready", ready);
+          const queued = ready && moveQueued(state, ME, i); // 押した。今の攻撃が終わったら出る
+          c.move.disabled = !ready || queued;
+          c.move.classList.toggle("is-ready", ready && !queued);
+          c.move.classList.toggle("is-queued", queued);
         }
       });
     }
