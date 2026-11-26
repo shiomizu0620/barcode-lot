@@ -128,6 +128,7 @@ export const battleLiveView: View = ({ root }) => {
     fast = !fast;
     setWantFast(fast);
     speedBtn.setAttribute("aria-pressed", String(fast));
+    stage?.setPace(fast ? 2 : 1);
     say(fast ? "倍速にした" : "ふつうの速さにした");
   });
 
@@ -145,6 +146,7 @@ export const battleLiveView: View = ({ root }) => {
         else {
           stage = s;
           s.aim(state.aim[ME]);
+          s.setPace(fast ? 2 : 1);
         }
       })
       .catch((e) => {
@@ -340,13 +342,16 @@ export const battleLiveView: View = ({ root }) => {
           say(`${names[ev.side][ev.slot]}の技「${ev.name}」`);
           spotlight(ev.side, ev.slot, ev.target);
           void specialBand(fxLayer, characterSvg(f), ev.name, tasteColors[ev.side][ev.slot], ev.side, d * 0.8);
-          window.setTimeout(() => {
-            if (gone) return;
-            const p = spot(ev.side, ev.slot);
-            gather(fxLayer, p.x, p.y, tasteColors[ev.side][ev.slot], d * 0.5);
-          }, d * 0.45);
+          if (!stage) {
+            // 3Dでは舞台の中で縞が渦巻くので、2Dのときだけ
+            window.setTimeout(() => {
+              if (gone) return;
+              const p = spot(ev.side, ev.slot);
+              gather(fxLayer, p.x, p.y, tasteColors[ev.side][ev.slot], d * 0.5);
+            }, d * 0.45);
+          }
           if (stage) {
-            stage.special(ev.side, ev.slot, ev.kind, d);
+            stage.special(ev.side, ev.slot, ev.target, ev.kind, tasteColors[ev.side][ev.slot], d);
             break;
           }
           const body = cells[ev.side][ev.slot].body;
@@ -395,7 +400,6 @@ export const battleLiveView: View = ({ root }) => {
             const color = ev.kind === "aji" ? tasteColors[ev.side][ev.slot] : colors[ev.side][ev.slot];
             stage.hit(ev.side, ev.slot, ev.target, ev.kind, power, color, (x, y) => {
               damagePop(fxLayer, x, y - 18, ev.damage, power);
-              if (ev.move) confetti(fxLayer, x, y, state.fighters[ev.side][ev.slot].spec.taste, tasteColors[ev.side][ev.slot], 12);
               sfx.hit(ev.match);
             });
             if (!ev.move) ev.kind === "aji" ? sfx.splash() : sfx.dash();

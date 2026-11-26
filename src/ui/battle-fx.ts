@@ -154,6 +154,11 @@ const TASTE_SHAPE: Record<Taste, string> = {
   うまい: `<path d="M0-9l2.6 5.6 6 .7-4.5 4.1 1.2 6L0 4.4l-5.3 3 1.2-6-4.5-4.1 6-.7Z"/>`, // ほし
 };
 
+/** 味の形だけの SVG（3Dの舞台で絵にする）。 */
+export function tasteShapeSvg(taste: Taste, color: string, size: number): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="-11 -11 22 22"><g fill="${color}" stroke="${INK}" stroke-width="1.6">${TASTE_SHAPE[taste]}</g></svg>`;
+}
+
 /** 技を出す子の帯（技名と、その子の絵）。こちらは左から、あいては右から入る。 */
 export async function specialBand(layer: HTMLElement, art: string, name: string, color: string, side: number, ms: number) {
   if (reducedMotion()) return;
