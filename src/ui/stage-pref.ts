@@ -1,4 +1,4 @@
-// 3Dの舞台で見るかどうか（お試しの切り替え）。three.js を読み込まずに使えるよう、stage3d.ts とは分けてある。
+// 試合の見え方の設定：3Dの舞台で見るか（お試し）と、倍速か。three.js を読み込まずに使えるよう、stage3d.ts とは分けてある。
 
 /**
  * 3Dで見るか（お試しの切り替え。端末に覚える）。
@@ -30,3 +30,20 @@ export function canUse3d(): boolean {
   }
 }
 
+
+/** 倍速で見るか（端末に覚える）。ふつうの速さで始め、試合の上の「倍速」を押した端末だけ倍速にする。 */
+const SPEED_KEY = "barcode-lot:speed";
+export function wantFast(): boolean {
+  try {
+    return localStorage.getItem(SPEED_KEY) === "2";
+  } catch {
+    return false;
+  }
+}
+export function setWantFast(on: boolean) {
+  try {
+    localStorage.setItem(SPEED_KEY, on ? "2" : "1");
+  } catch {
+    /* noop */
+  }
+}

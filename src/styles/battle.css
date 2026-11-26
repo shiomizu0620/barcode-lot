@@ -504,3 +504,11 @@ body.battle-done main { padding-bottom: 0; }
 .stage3d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .stage3d .arena-mid { position: absolute; top: 8px; left: 0; right: 0; min-height: 0; }
 .stage3d .fx { position: absolute; inset: 0; }
+/* 倍速：入っているときは黄色 */
+.sound.speed[aria-pressed="true"] { background: var(--pop); }
+/* 手を出せる試合の上の帯：1段目は見出しと時計、2段目にボタン（3つ並ぶと見出しが折れるため） */
+.live .battle-top { flex-wrap: wrap; row-gap: 6px; }
+.live .battle-title { flex: 1 1 auto; white-space: nowrap; }
+.live .live-clock { order: 1; }
+.live .battle-top::after { content: ""; order: 2; flex-basis: 100%; }
+.live .battle-top .sound { order: 3; margin-left: 0; }

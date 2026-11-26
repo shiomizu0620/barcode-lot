@@ -49,7 +49,7 @@ const skilled: Player = (s) => {
   return out;
 };
 
-// 数値を試しに変えて測るとき：LIVE_TRY='{"cpuFire":[35,60]}' npx vite-node scripts/balance.ts
+// 数値を試しに変えて測るとき：LIVE_TRY='{"cpuFire":[20,35]}' npx vite-node scripts/balance.ts
 if (process.env.LIVE_TRY) Object.assign(LIVE, JSON.parse(process.env.LIVE_TRY));
 const N = Number(process.argv[2] ?? 1000);
 for (const [name, player] of [["何もしない", idle], ["技だけ押す", masher], ["上手い人", skilled]] as const) {

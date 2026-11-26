@@ -1,5 +1,5 @@
 // 手を出せる試合。計算は core/live.ts が0.1秒ごとに1コマ進め、ここは操作を渡して結果を映す。
-// できること：相手をタップして「ねらう」、効き目が付いた味方を「ふく」、ゲージがたまったら「技」。
+// できること：相手をタップして「ねらう」、効き目が付いた味方を「ふく」、ゲージがたまったら「技」。「倍速」で2倍の速さで見られる。
 // 手応え（ため・体当たり・しぶき・縞のはじけ・揺れ・効果音）は見た目だけで、勝敗や数値には関わらない。
 
 import { encodeTeam, matchup } from "../../core/battle";
@@ -13,7 +13,7 @@ import { $ } from "../dom";
 import { characterSvg, TASTE_COLOR, tasteChip } from "../parts";
 import { clearReceipt, receiptHtml, showReceipt } from "../receipt";
 import { navigate, type View } from "../router";
-import { canUse3d, setWant3d, want3d } from "../stage-pref";
+import { canUse3d, setWant3d, setWantFast, want3d, wantFast } from "../stage-pref";
 import type { Stage } from "../stage3d";
 
 const ME = 0, FOE = 1;
@@ -56,6 +56,8 @@ export const battleLiveView: View = ({ root }) => {
   const { mode, opponent, team } = match;
   const state = createLive(team, opponent.members, `${opponent.code}:${encodeTeam(team)}`, [false, true]);
   const use3d = want3d() && canUse3d();
+  let fast = wantFast();
+  const tickMs = () => LIVE.tickMs / (fast ? 2 : 1); // 実際の時間での1コマ
 
   root.innerHTML = `
     <section class="live${use3d ? " is-3d" : ""}" aria-label="バトル">
@@ -63,6 +65,7 @@ export const battleLiveView: View = ({ root }) => {
         <p class="battle-title">${opponent.title}</p>
         <button type="button" class="sound stage-toggle">${use3d ? "2Dで見る" : "3Dで見る"}</button>
         <button type="button" class="sound" data-sound aria-pressed="${!isMuted()}">${isMuted() ? "音なし" : "音あり"}</button>
+        <button type="button" class="sound speed" aria-pressed="${fast}">倍速</button>
         <p class="live-clock" aria-label="のこり時間">${clock(LIVE.timeLimit)}</p>
       </div>
       <div class="arena">
@@ -115,6 +118,15 @@ export const battleLiveView: View = ({ root }) => {
     unlock();
     soundBtn.setAttribute("aria-pressed", String(!isMuted()));
     soundBtn.textContent = isMuted() ? "音なし" : "音あり";
+  });
+
+  // 倍速：押すとすぐ切り替わる（試合は続く）。端末に覚える
+  const speedBtn = $<HTMLButtonElement>(".speed", root);
+  speedBtn.addEventListener("click", () => {
+    fast = !fast;
+    setWantFast(fast);
+    speedBtn.setAttribute("aria-pressed", String(fast));
+    say(fast ? "倍速にした" : "ふつうの速さにした");
   });
 
   // ---- 3Dの舞台（お試し）。読み込めなければ2Dに戻す ----
@@ -238,13 +250,13 @@ export const battleLiveView: View = ({ root }) => {
         case "windup": {
           if (ev.side === FOE) sfx.windup();
           if (stage) {
-            stage.windup(ev.side, ev.slot, ev.target);
+            stage.windup(ev.side, ev.slot, ev.target, LIVE.windup * tickMs());
             break;
           }
           // ため：からだは体を引く、あじは体をふくらませる（0.4秒）。相手のためは赤い「！」でわかる（draw で付く）
           const { ux, uy } = toward(ev.side, ev.slot, ev.target);
           const pose = ev.kind === "karada" ? `translate(${-ux * 9}px,${-uy * 9}px) scale(.94,1.06)` : `translate(0,${-uy * 4}px) scale(1.08,.94)`;
-          void play(cells[ev.side][ev.slot].body, [{ transform: "none" }, { transform: pose }], LIVE.windup * LIVE.tickMs, { fill: "forwards", easing: "ease-in" });
+          void play(cells[ev.side][ev.slot].body, [{ transform: "none" }, { transform: pose }], LIVE.windup * tickMs(), { fill: "forwards", easing: "ease-in" });
           break;
         }
         case "hit": {
@@ -435,13 +447,14 @@ export const battleLiveView: View = ({ root }) => {
     owed += document.hidden ? 0 : now - last; // 画面を離れている間は止める
     last = now;
     let steps = 0;
-    while (owed >= LIVE.tickMs && steps++ < 5 && state.winner === null) {
-      owed -= LIVE.tickMs;
+    const step = tickMs();
+    while (owed >= step && steps++ < 5 && state.winner === null) {
+      owed -= step;
       const inputs = pending;
       pending = [];
       show(stepLive(state, inputs));
     }
-    if (owed > LIVE.tickMs * 5) owed = 0; // 長く止まっていたぶんは追いかけない
+    if (owed > step * 5) owed = 0; // 長く止まっていたぶんは追いかけない
     if (state.winner === null) draw();
   }
 

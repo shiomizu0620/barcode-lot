@@ -168,7 +168,8 @@ interface Rig {
 }
 
 export interface Stage {
-  windup(side: 0 | 1, slot: number, target: number): void;
+  /** ため。ms はためが続く実際の時間（倍速なら短い）。 */
+  windup(side: 0 | 1, slot: number, target: number, ms: number): void;
   /** からだは体当たり、あじは味のしぶきが飛んでいく。当たった瞬間に onImpact（画面の座標）。 */
   hit(side: 0 | 1, slot: number, target: number, kind: Kind, power: Power, color: string, onImpact: (x: number, y: number) => void): void;
   /** こちらがねらう相手の足もとに輪を出す（null で消す）。 */
@@ -440,14 +441,14 @@ export async function createStage(host: HTMLElement, fighters: LiveFighter[][]):
   };
 
   const stage: Stage = {
-    windup(side, slot, target) {
+    windup(side, slot, target, ms) {
       const a = rigs[side][slot], t = rigs[1 - side][target];
       if (!a || !t) return;
       if (side === 1) a.warn.visible = true;
       if (calm) return;
       const { d } = dirTo(a, t);
       a.clip = {
-        t0: clock, dur: 400,
+        t0: clock, dur: ms,
         run: (k, r) => {
           const e = easeOut(k);
           r.off.copy(d).multiplyScalar(-0.32 * e);
